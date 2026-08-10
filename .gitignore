@@ -1,0 +1,20 @@
+# Secrets — never commit
+.env
+.env.*
+!env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.Python
+venv/
+.venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# NOTE: sessions/ and logs/ are deliberately NOT ignored.
+# They are auto-generated submission artifacts required by the project rubric.

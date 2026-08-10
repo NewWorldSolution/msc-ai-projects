@@ -1,0 +1,1548 @@
+{
+  "session_id": "d13860d6-0c6f-43ed-8a86-8640fa5972fe",
+  "user_id": "demo_user",
+  "conversation_history": [
+    {
+      "user_input": "Who are the parties in contract CON-001?",
+      "messages": [
+        {
+          "content": "Who are the parties in contract CON-001?",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "human",
+          "name": null,
+          "id": "c41de7ab-0459-4be0-b6d2-781c33021b25"
+        },
+        {
+          "content": "",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 17,
+              "prompt_tokens": 692,
+              "total_tokens": 709,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_64d0f9e03c",
+            "id": "chatcmpl-EBFZy8GRFOVJJTRPzIO2YVMBlj45j",
+            "service_tier": "default",
+            "finish_reason": "tool_calls",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac4-eb57-7131-a929-0714704db14f-0",
+          "tool_calls": [
+            {
+              "name": "document_reader",
+              "args": {
+                "doc_id": "CON-001"
+              },
+              "id": "call_xw8e8fItBPKQLJ7PmEk32Zip",
+              "type": "tool_call"
+            }
+          ],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 692,
+            "output_tokens": 17,
+            "total_tokens": 709,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "Document CON-001:\nAmount: $180,000.00\n\n\n                SERVICE AGREEMENT\n\n                This Service Agreement is entered into on January 1, 2024, between:\n                - Provider: DocDacity Solutions Inc.\n                - Client: Healthcare Partners LLC\n\n                Services:\n                1. Document Processing Platform Access\n                2. 24/7 Technical Support\n                3. Monthly Data Analytics Reports\n                4. Compliance Monitoring\n\n                Duration: 12 months\n                Monthly Fee: $15,000\n                Total Contract Value: $180,000\n\n                Termination: Either party may terminate with 60 days written notice.\n                ",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "tool",
+          "name": "document_reader",
+          "id": "bb69b882-bb2b-498f-9955-aea8cf340a39",
+          "tool_call_id": "call_xw8e8fItBPKQLJ7PmEk32Zip",
+          "artifact": null,
+          "status": "success"
+        },
+        {
+          "content": "The parties in contract CON-001 are:\n\n- **Provider**: DocDacity Solutions Inc.\n- **Client**: Healthcare Partners LLC",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 29,
+              "prompt_tokens": 853,
+              "total_tokens": 882,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_64d0f9e03c",
+            "id": "chatcmpl-EBFZziN3honZ2HjQrH0gFTqmkXXVg",
+            "service_tier": "default",
+            "finish_reason": "stop",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac4-f016-7310-935f-26116e3097aa-0",
+          "tool_calls": [],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 853,
+            "output_tokens": 29,
+            "total_tokens": 882,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        }
+      ],
+      "intent": {
+        "intent_type": "qa",
+        "confidence": 0.95,
+        "reasoning": "The user is asking for specific information about a document, specifically the parties involved in a contract. This is a straightforward question about the document's content and does not involve summarization or calculations."
+      },
+      "next_step": "end",
+      "conversation_summary": "The conversation focused on identifying the parties involved in contract CON-001. The document revealed that the Provider is DocDacity Solutions Inc. and the Client is Healthcare Partners LLC.",
+      "active_documents": [
+        "CON-001"
+      ],
+      "current_response": {
+        "messages": [
+          {
+            "content": "Who are the parties in contract CON-001?",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "c41de7ab-0459-4be0-b6d2-781c33021b25"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 17,
+                "prompt_tokens": 692,
+                "total_tokens": 709,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cache_write_tokens": null,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-4o-2024-08-06",
+              "system_fingerprint": "fp_64d0f9e03c",
+              "id": "chatcmpl-EBFZy8GRFOVJJTRPzIO2YVMBlj45j",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "name": null,
+            "id": "lc_run--019feac4-eb57-7131-a929-0714704db14f-0",
+            "tool_calls": [
+              {
+                "name": "document_reader",
+                "args": {
+                  "doc_id": "CON-001"
+                },
+                "id": "call_xw8e8fItBPKQLJ7PmEk32Zip",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 692,
+              "output_tokens": 17,
+              "total_tokens": 709,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Document CON-001:\nAmount: $180,000.00\n\n\n                SERVICE AGREEMENT\n\n                This Service Agreement is entered into on January 1, 2024, between:\n                - Provider: DocDacity Solutions Inc.\n                - Client: Healthcare Partners LLC\n\n                Services:\n                1. Document Processing Platform Access\n                2. 24/7 Technical Support\n                3. Monthly Data Analytics Reports\n                4. Compliance Monitoring\n\n                Duration: 12 months\n                Monthly Fee: $15,000\n                Total Contract Value: $180,000\n\n                Termination: Either party may terminate with 60 days written notice.\n                ",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "document_reader",
+            "id": "bb69b882-bb2b-498f-9955-aea8cf340a39",
+            "tool_call_id": "call_xw8e8fItBPKQLJ7PmEk32Zip",
+            "artifact": null,
+            "status": "success"
+          },
+          {
+            "content": "The parties in contract CON-001 are:\n\n- **Provider**: DocDacity Solutions Inc.\n- **Client**: Healthcare Partners LLC",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 29,
+                "prompt_tokens": 853,
+                "total_tokens": 882,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cache_write_tokens": null,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-4o-2024-08-06",
+              "system_fingerprint": "fp_64d0f9e03c",
+              "id": "chatcmpl-EBFZziN3honZ2HjQrH0gFTqmkXXVg",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "name": null,
+            "id": "lc_run--019feac4-f016-7310-935f-26116e3097aa-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 853,
+              "output_tokens": 29,
+              "total_tokens": 882,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ],
+        "structured_response": {
+          "question": "Who are the parties in contract CON-001?",
+          "answer": "The parties in contract CON-001 are:\n\n- **Provider**: DocDacity Solutions Inc.\n- **Client**: Healthcare Partners LLC",
+          "sources": [
+            "CON-001"
+          ],
+          "confidence": 0.95,
+          "timestamp": "2023-10-06T14:30:00+00:00"
+        }
+      },
+      "tools_used": [
+        "document_reader"
+      ],
+      "session_id": "d13860d6-0c6f-43ed-8a86-8640fa5972fe",
+      "user_id": "demo_user",
+      "actions_taken": [
+        "classify_intent",
+        "qa_agent",
+        "update_memory"
+      ]
+    },
+    {
+      "user_input": "Summarize insurance claim CLM-001.",
+      "messages": [
+        {
+          "content": "Who are the parties in contract CON-001?",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "human",
+          "name": null,
+          "id": "c41de7ab-0459-4be0-b6d2-781c33021b25"
+        },
+        {
+          "content": "",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 17,
+              "prompt_tokens": 692,
+              "total_tokens": 709,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_64d0f9e03c",
+            "id": "chatcmpl-EBFZy8GRFOVJJTRPzIO2YVMBlj45j",
+            "service_tier": "default",
+            "finish_reason": "tool_calls",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac4-eb57-7131-a929-0714704db14f-0",
+          "tool_calls": [
+            {
+              "name": "document_reader",
+              "args": {
+                "doc_id": "CON-001"
+              },
+              "id": "call_xw8e8fItBPKQLJ7PmEk32Zip",
+              "type": "tool_call"
+            }
+          ],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 692,
+            "output_tokens": 17,
+            "total_tokens": 709,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "Document CON-001:\nAmount: $180,000.00\n\n\n                SERVICE AGREEMENT\n\n                This Service Agreement is entered into on January 1, 2024, between:\n                - Provider: DocDacity Solutions Inc.\n                - Client: Healthcare Partners LLC\n\n                Services:\n                1. Document Processing Platform Access\n                2. 24/7 Technical Support\n                3. Monthly Data Analytics Reports\n                4. Compliance Monitoring\n\n                Duration: 12 months\n                Monthly Fee: $15,000\n                Total Contract Value: $180,000\n\n                Termination: Either party may terminate with 60 days written notice.\n                ",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "tool",
+          "name": "document_reader",
+          "id": "bb69b882-bb2b-498f-9955-aea8cf340a39",
+          "tool_call_id": "call_xw8e8fItBPKQLJ7PmEk32Zip",
+          "artifact": null,
+          "status": "success"
+        },
+        {
+          "content": "The parties in contract CON-001 are:\n\n- **Provider**: DocDacity Solutions Inc.\n- **Client**: Healthcare Partners LLC",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 29,
+              "prompt_tokens": 853,
+              "total_tokens": 882,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_64d0f9e03c",
+            "id": "chatcmpl-EBFZziN3honZ2HjQrH0gFTqmkXXVg",
+            "service_tier": "default",
+            "finish_reason": "stop",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac4-f016-7310-935f-26116e3097aa-0",
+          "tool_calls": [],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 853,
+            "output_tokens": 29,
+            "total_tokens": 882,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "Summarize insurance claim CLM-001.",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "human",
+          "name": null,
+          "id": "cad1db06-9837-46e4-9bc5-1534f0d39779"
+        },
+        {
+          "content": "",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 18,
+              "prompt_tokens": 886,
+              "total_tokens": 904,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_684acb85fd",
+            "id": "chatcmpl-EBFa9qChFfIESkzGaXmhQz2dnIzco",
+            "service_tier": "default",
+            "finish_reason": "tool_calls",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac5-17fd-7551-9b0e-98c455752dda-0",
+          "tool_calls": [
+            {
+              "name": "document_reader",
+              "args": {
+                "doc_id": "CLM-001"
+              },
+              "id": "call_cEVqfSQkJFp4lWvKgWgUCCqu",
+              "type": "tool_call"
+            }
+          ],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 886,
+            "output_tokens": 18,
+            "total_tokens": 904,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "Document CLM-001:\nAmount: $2,450.00\n\n\n                INSURANCE CLAIM FORM\n                Claim Number: 78901\n                Date of Incident: 2024-02-10\n                Policy Number: POL-456789\n\n                Claimant: John Doe\n                Type of Claim: Medical Expense Reimbursement\n\n                Expenses:\n                - Hospital Visit: $1,200\n                - Diagnostic Tests: $800\n                - Medication: $150\n                - Follow-up Consultation: $300\n\n                Total Claim Amount: $2,450\n\n                Status: Under Review\n                ",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "tool",
+          "name": "document_reader",
+          "id": "31837615-626f-4e48-b65e-cb9934fac3fb",
+          "tool_call_id": "call_cEVqfSQkJFp4lWvKgWgUCCqu",
+          "artifact": null,
+          "status": "success"
+        },
+        {
+          "content": "**Insurance Claim Summary: CLM-001**\n\n- **Claim Number**: 78901\n- **Claimant**: John Doe\n- **Policy Number**: POL-456789\n- **Date of Incident**: February 10, 2024\n- **Type of Claim**: Medical Expense Reimbursement\n\n**Expenses:**\n- Hospital Visit: $1,200\n- Diagnostic Tests: $800\n- Medication: $150\n- Follow-up Consultation: $300\n\n- **Total Claim Amount**: $2,450\n- **Status**: Under Review",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 121,
+              "prompt_tokens": 1034,
+              "total_tokens": 1155,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_684acb85fd",
+            "id": "chatcmpl-EBFaAZonD7lWBvXp704yyR5kJV7MM",
+            "service_tier": "default",
+            "finish_reason": "stop",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac5-1d45-7943-b1cf-31fbb50cf48c-0",
+          "tool_calls": [],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 1034,
+            "output_tokens": 121,
+            "total_tokens": 1155,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        }
+      ],
+      "intent": {
+        "intent_type": "summarization",
+        "confidence": 0.95,
+        "reasoning": "The user explicitly requested a summary of a specific insurance claim (CLM-001). This aligns with the 'summarization' category, as it involves extracting key points from a document without requiring calculations."
+      },
+      "next_step": "end",
+      "conversation_summary": "The conversation involved identifying the parties in contract CON-001, which are DocDacity Solutions Inc. (Provider) and Healthcare Partners LLC (Client). The contract details a service agreement for document processing and support services. Additionally, an insurance claim CLM-001 was summarized, involving a medical expense reimbursement claim by John Doe for $2,450, which is currently under review.",
+      "active_documents": [
+        "CON-001",
+        "CLM-001"
+      ],
+      "current_response": {
+        "messages": [
+          {
+            "content": "Summarize insurance claim CLM-001.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "cad1db06-9837-46e4-9bc5-1534f0d39779"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 18,
+                "prompt_tokens": 886,
+                "total_tokens": 904,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cache_write_tokens": null,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-4o-2024-08-06",
+              "system_fingerprint": "fp_684acb85fd",
+              "id": "chatcmpl-EBFa9qChFfIESkzGaXmhQz2dnIzco",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "name": null,
+            "id": "lc_run--019feac5-17fd-7551-9b0e-98c455752dda-0",
+            "tool_calls": [
+              {
+                "name": "document_reader",
+                "args": {
+                  "doc_id": "CLM-001"
+                },
+                "id": "call_cEVqfSQkJFp4lWvKgWgUCCqu",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 886,
+              "output_tokens": 18,
+              "total_tokens": 904,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Document CLM-001:\nAmount: $2,450.00\n\n\n                INSURANCE CLAIM FORM\n                Claim Number: 78901\n                Date of Incident: 2024-02-10\n                Policy Number: POL-456789\n\n                Claimant: John Doe\n                Type of Claim: Medical Expense Reimbursement\n\n                Expenses:\n                - Hospital Visit: $1,200\n                - Diagnostic Tests: $800\n                - Medication: $150\n                - Follow-up Consultation: $300\n\n                Total Claim Amount: $2,450\n\n                Status: Under Review\n                ",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "document_reader",
+            "id": "31837615-626f-4e48-b65e-cb9934fac3fb",
+            "tool_call_id": "call_cEVqfSQkJFp4lWvKgWgUCCqu",
+            "artifact": null,
+            "status": "success"
+          },
+          {
+            "content": "**Insurance Claim Summary: CLM-001**\n\n- **Claim Number**: 78901\n- **Claimant**: John Doe\n- **Policy Number**: POL-456789\n- **Date of Incident**: February 10, 2024\n- **Type of Claim**: Medical Expense Reimbursement\n\n**Expenses:**\n- Hospital Visit: $1,200\n- Diagnostic Tests: $800\n- Medication: $150\n- Follow-up Consultation: $300\n\n- **Total Claim Amount**: $2,450\n- **Status**: Under Review",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 121,
+                "prompt_tokens": 1034,
+                "total_tokens": 1155,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cache_write_tokens": null,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-4o-2024-08-06",
+              "system_fingerprint": "fp_684acb85fd",
+              "id": "chatcmpl-EBFaAZonD7lWBvXp704yyR5kJV7MM",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "name": null,
+            "id": "lc_run--019feac5-1d45-7943-b1cf-31fbb50cf48c-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 1034,
+              "output_tokens": 121,
+              "total_tokens": 1155,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ],
+        "structured_response": {
+          "original_length": 552,
+          "summary": "Insurance Claim Summary: CLM-001\n\n- Claim Number: 78901\n- Claimant: John Doe\n- Policy Number: POL-456789\n- Date of Incident: February 10, 2024\n- Type of Claim: Medical Expense Reimbursement\n\nExpenses:\n- Hospital Visit: $1,200\n- Diagnostic Tests: $800\n- Medication: $150\n- Follow-up Consultation: $300\n\n- Total Claim Amount: $2,450\n- Status: Under Review",
+          "key_points": [
+            "Claim Number: 78901",
+            "Claimant: John Doe",
+            "Policy Number: POL-456789",
+            "Date of Incident: February 10, 2024",
+            "Type of Claim: Medical Expense Reimbursement",
+            "Total Claim Amount: $2,450",
+            "Status: Under Review"
+          ],
+          "document_ids": [
+            "CLM-001"
+          ],
+          "timestamp": "2023-10-17T12:00:00+00:00"
+        }
+      },
+      "tools_used": [
+        "document_reader"
+      ],
+      "session_id": "d13860d6-0c6f-43ed-8a86-8640fa5972fe",
+      "user_id": "demo_user",
+      "actions_taken": [
+        "classify_intent",
+        "summarization_agent",
+        "update_memory"
+      ]
+    },
+    {
+      "user_input": "Calculate 10% of the Total Due in invoice INV-002.",
+      "messages": [
+        {
+          "content": "Who are the parties in contract CON-001?",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "human",
+          "name": null,
+          "id": "c41de7ab-0459-4be0-b6d2-781c33021b25"
+        },
+        {
+          "content": "",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 17,
+              "prompt_tokens": 692,
+              "total_tokens": 709,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_64d0f9e03c",
+            "id": "chatcmpl-EBFZy8GRFOVJJTRPzIO2YVMBlj45j",
+            "service_tier": "default",
+            "finish_reason": "tool_calls",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac4-eb57-7131-a929-0714704db14f-0",
+          "tool_calls": [
+            {
+              "name": "document_reader",
+              "args": {
+                "doc_id": "CON-001"
+              },
+              "id": "call_xw8e8fItBPKQLJ7PmEk32Zip",
+              "type": "tool_call"
+            }
+          ],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 692,
+            "output_tokens": 17,
+            "total_tokens": 709,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "Document CON-001:\nAmount: $180,000.00\n\n\n                SERVICE AGREEMENT\n\n                This Service Agreement is entered into on January 1, 2024, between:\n                - Provider: DocDacity Solutions Inc.\n                - Client: Healthcare Partners LLC\n\n                Services:\n                1. Document Processing Platform Access\n                2. 24/7 Technical Support\n                3. Monthly Data Analytics Reports\n                4. Compliance Monitoring\n\n                Duration: 12 months\n                Monthly Fee: $15,000\n                Total Contract Value: $180,000\n\n                Termination: Either party may terminate with 60 days written notice.\n                ",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "tool",
+          "name": "document_reader",
+          "id": "bb69b882-bb2b-498f-9955-aea8cf340a39",
+          "tool_call_id": "call_xw8e8fItBPKQLJ7PmEk32Zip",
+          "artifact": null,
+          "status": "success"
+        },
+        {
+          "content": "The parties in contract CON-001 are:\n\n- **Provider**: DocDacity Solutions Inc.\n- **Client**: Healthcare Partners LLC",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 29,
+              "prompt_tokens": 853,
+              "total_tokens": 882,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_64d0f9e03c",
+            "id": "chatcmpl-EBFZziN3honZ2HjQrH0gFTqmkXXVg",
+            "service_tier": "default",
+            "finish_reason": "stop",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac4-f016-7310-935f-26116e3097aa-0",
+          "tool_calls": [],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 853,
+            "output_tokens": 29,
+            "total_tokens": 882,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "Summarize insurance claim CLM-001.",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "human",
+          "name": null,
+          "id": "cad1db06-9837-46e4-9bc5-1534f0d39779"
+        },
+        {
+          "content": "",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 18,
+              "prompt_tokens": 886,
+              "total_tokens": 904,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_684acb85fd",
+            "id": "chatcmpl-EBFa9qChFfIESkzGaXmhQz2dnIzco",
+            "service_tier": "default",
+            "finish_reason": "tool_calls",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac5-17fd-7551-9b0e-98c455752dda-0",
+          "tool_calls": [
+            {
+              "name": "document_reader",
+              "args": {
+                "doc_id": "CLM-001"
+              },
+              "id": "call_cEVqfSQkJFp4lWvKgWgUCCqu",
+              "type": "tool_call"
+            }
+          ],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 886,
+            "output_tokens": 18,
+            "total_tokens": 904,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "Document CLM-001:\nAmount: $2,450.00\n\n\n                INSURANCE CLAIM FORM\n                Claim Number: 78901\n                Date of Incident: 2024-02-10\n                Policy Number: POL-456789\n\n                Claimant: John Doe\n                Type of Claim: Medical Expense Reimbursement\n\n                Expenses:\n                - Hospital Visit: $1,200\n                - Diagnostic Tests: $800\n                - Medication: $150\n                - Follow-up Consultation: $300\n\n                Total Claim Amount: $2,450\n\n                Status: Under Review\n                ",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "tool",
+          "name": "document_reader",
+          "id": "31837615-626f-4e48-b65e-cb9934fac3fb",
+          "tool_call_id": "call_cEVqfSQkJFp4lWvKgWgUCCqu",
+          "artifact": null,
+          "status": "success"
+        },
+        {
+          "content": "**Insurance Claim Summary: CLM-001**\n\n- **Claim Number**: 78901\n- **Claimant**: John Doe\n- **Policy Number**: POL-456789\n- **Date of Incident**: February 10, 2024\n- **Type of Claim**: Medical Expense Reimbursement\n\n**Expenses:**\n- Hospital Visit: $1,200\n- Diagnostic Tests: $800\n- Medication: $150\n- Follow-up Consultation: $300\n\n- **Total Claim Amount**: $2,450\n- **Status**: Under Review",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 121,
+              "prompt_tokens": 1034,
+              "total_tokens": 1155,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_684acb85fd",
+            "id": "chatcmpl-EBFaAZonD7lWBvXp704yyR5kJV7MM",
+            "service_tier": "default",
+            "finish_reason": "stop",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac5-1d45-7943-b1cf-31fbb50cf48c-0",
+          "tool_calls": [],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 1034,
+            "output_tokens": 121,
+            "total_tokens": 1155,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "Calculate 10% of the Total Due in invoice INV-002.",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "human",
+          "name": null,
+          "id": "2a8099b9-513b-43c9-b4fc-b6581c62b17d"
+        },
+        {
+          "content": "",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 17,
+              "prompt_tokens": 1334,
+              "total_tokens": 1351,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 0
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_e160a45017",
+            "id": "chatcmpl-EBFaMjLZ0GA8CNABWJwKXM4CQaWJ5",
+            "service_tier": "default",
+            "finish_reason": "tool_calls",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac5-4b72-7f43-bdc0-1bc3804ef3c4-0",
+          "tool_calls": [
+            {
+              "name": "document_reader",
+              "args": {
+                "doc_id": "INV-002"
+              },
+              "id": "call_ZS4T601t5sTrFzIbCK3UULsw",
+              "type": "tool_call"
+            }
+          ],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 1334,
+            "output_tokens": 17,
+            "total_tokens": 1351,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 0
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "Document INV-002:\nAmount: $69,300.00\n\n\n                Invoice #12346\n                Date: 2024-02-20\n                Client: TechStart Inc.\n\n                Products:\n                - Enterprise License (Annual): $50,000\n                - Implementation Services: $15,000\n                - Training Package: $5,000\n\n                Subtotal: $70,000\n                Discount (10%): -$7,000\n                Tax (10%): $6,300\n                Total Due: $69,300\n\n                Payment Terms: Net 45 days\n                ",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "tool",
+          "name": "document_reader",
+          "id": "25e3b154-17cb-4fa2-90ef-a5fea793cd5b",
+          "tool_call_id": "call_ZS4T601t5sTrFzIbCK3UULsw",
+          "artifact": null,
+          "status": "success"
+        },
+        {
+          "content": "",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 21,
+              "prompt_tokens": 1483,
+              "total_tokens": 1504,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 1280
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_e160a45017",
+            "id": "chatcmpl-EBFaNAL9QnI9FaxJrnmii1skiRLi3",
+            "service_tier": "default",
+            "finish_reason": "tool_calls",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac5-5035-77e3-b6f6-8681c3dbd6f3-0",
+          "tool_calls": [
+            {
+              "name": "calculator",
+              "args": {
+                "expression": "69,300 * 0.10"
+              },
+              "id": "call_SeYCFcIagujRYYLFVFl8eDvx",
+              "type": "tool_call"
+            }
+          ],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 1483,
+            "output_tokens": 21,
+            "total_tokens": 1504,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 1280
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "Error evaluating expression: Invalid characters in expression. Only numbers and +, -, *, /, (, ) are allowed.",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "tool",
+          "name": "calculator",
+          "id": "d784cd63-4c45-4cbb-9c68-fa30231009eb",
+          "tool_call_id": "call_SeYCFcIagujRYYLFVFl8eDvx",
+          "artifact": null,
+          "status": "success"
+        },
+        {
+          "content": "",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 20,
+              "prompt_tokens": 1534,
+              "total_tokens": 1554,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 1408
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_e160a45017",
+            "id": "chatcmpl-EBFaPlSqw9ku1xA9FgAbVk9Snp1lP",
+            "service_tier": "default",
+            "finish_reason": "tool_calls",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac5-5652-7652-bb1d-013160f0f0ea-0",
+          "tool_calls": [
+            {
+              "name": "calculator",
+              "args": {
+                "expression": "69300 * 0.10"
+              },
+              "id": "call_cs9K6tT1L9OQBqK2iHOQcmUb",
+              "type": "tool_call"
+            }
+          ],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 1534,
+            "output_tokens": 20,
+            "total_tokens": 1554,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 1408
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        },
+        {
+          "content": "6930.0",
+          "additional_kwargs": {},
+          "response_metadata": {},
+          "type": "tool",
+          "name": "calculator",
+          "id": "30ef0130-0e97-4047-b203-34cbd970913d",
+          "tool_call_id": "call_cs9K6tT1L9OQBqK2iHOQcmUb",
+          "artifact": null,
+          "status": "success"
+        },
+        {
+          "content": "10% of the Total Due in invoice INV-002 is $6,930.00.\n\n- **Total Due**: $69,300\n- **Calculation**: \\( 69,300 \\times 0.10 = 6,930 \\)\n\nThe values were obtained from document INV-002.",
+          "additional_kwargs": {
+            "refusal": null
+          },
+          "response_metadata": {
+            "token_usage": {
+              "completion_tokens": 64,
+              "prompt_tokens": 1565,
+              "total_tokens": 1629,
+              "completion_tokens_details": {
+                "accepted_prediction_tokens": 0,
+                "audio_tokens": 0,
+                "reasoning_tokens": 0,
+                "rejected_prediction_tokens": 0
+              },
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": null,
+                "cached_tokens": 1408
+              }
+            },
+            "model_provider": "openai",
+            "model_name": "gpt-4o-2024-08-06",
+            "system_fingerprint": "fp_e160a45017",
+            "id": "chatcmpl-EBFaT3Ol0aPLR1lAoYkV1DVI2CHdE",
+            "service_tier": "default",
+            "finish_reason": "stop",
+            "logprobs": null
+          },
+          "type": "ai",
+          "name": null,
+          "id": "lc_run--019feac5-5b2c-7d40-b3ac-3de1be0008e6-0",
+          "tool_calls": [],
+          "invalid_tool_calls": [],
+          "usage_metadata": {
+            "input_tokens": 1565,
+            "output_tokens": 64,
+            "total_tokens": 1629,
+            "input_token_details": {
+              "audio": 0,
+              "cache_read": 1408
+            },
+            "output_token_details": {
+              "audio": 0,
+              "reasoning": 0
+            }
+          }
+        }
+      ],
+      "intent": {
+        "intent_type": "calculation",
+        "confidence": 0.95,
+        "reasoning": "The user's request involves calculating a percentage of a total amount specified in an invoice. This requires a mathematical operation, which falls under the 'calculation' category. The mention of '10% of the Total Due' indicates a need for numerical computation."
+      },
+      "next_step": "end",
+      "conversation_summary": "The conversation involved retrieving information from various documents. The parties in contract CON-001 are DocDacity Solutions Inc. (Provider) and Healthcare Partners LLC (Client). Insurance claim CLM-001 involves a medical expense reimbursement for John Doe, totaling $2,450, and is currently under review. For invoice INV-002, 10% of the Total Due ($69,300) was calculated to be $6,930.",
+      "active_documents": [
+        "CON-001",
+        "CLM-001",
+        "INV-002"
+      ],
+      "current_response": {
+        "messages": [
+          {
+            "content": "Calculate 10% of the Total Due in invoice INV-002.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "2a8099b9-513b-43c9-b4fc-b6581c62b17d"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 17,
+                "prompt_tokens": 1334,
+                "total_tokens": 1351,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cache_write_tokens": null,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-4o-2024-08-06",
+              "system_fingerprint": "fp_e160a45017",
+              "id": "chatcmpl-EBFaMjLZ0GA8CNABWJwKXM4CQaWJ5",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "name": null,
+            "id": "lc_run--019feac5-4b72-7f43-bdc0-1bc3804ef3c4-0",
+            "tool_calls": [
+              {
+                "name": "document_reader",
+                "args": {
+                  "doc_id": "INV-002"
+                },
+                "id": "call_ZS4T601t5sTrFzIbCK3UULsw",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 1334,
+              "output_tokens": 17,
+              "total_tokens": 1351,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Document INV-002:\nAmount: $69,300.00\n\n\n                Invoice #12346\n                Date: 2024-02-20\n                Client: TechStart Inc.\n\n                Products:\n                - Enterprise License (Annual): $50,000\n                - Implementation Services: $15,000\n                - Training Package: $5,000\n\n                Subtotal: $70,000\n                Discount (10%): -$7,000\n                Tax (10%): $6,300\n                Total Due: $69,300\n\n                Payment Terms: Net 45 days\n                ",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "document_reader",
+            "id": "25e3b154-17cb-4fa2-90ef-a5fea793cd5b",
+            "tool_call_id": "call_ZS4T601t5sTrFzIbCK3UULsw",
+            "artifact": null,
+            "status": "success"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 21,
+                "prompt_tokens": 1483,
+                "total_tokens": 1504,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cache_write_tokens": null,
+                  "cached_tokens": 1280
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-4o-2024-08-06",
+              "system_fingerprint": "fp_e160a45017",
+              "id": "chatcmpl-EBFaNAL9QnI9FaxJrnmii1skiRLi3",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "name": null,
+            "id": "lc_run--019feac5-5035-77e3-b6f6-8681c3dbd6f3-0",
+            "tool_calls": [
+              {
+                "name": "calculator",
+                "args": {
+                  "expression": "69,300 * 0.10"
+                },
+                "id": "call_SeYCFcIagujRYYLFVFl8eDvx",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 1483,
+              "output_tokens": 21,
+              "total_tokens": 1504,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 1280
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Error evaluating expression: Invalid characters in expression. Only numbers and +, -, *, /, (, ) are allowed.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculator",
+            "id": "d784cd63-4c45-4cbb-9c68-fa30231009eb",
+            "tool_call_id": "call_SeYCFcIagujRYYLFVFl8eDvx",
+            "artifact": null,
+            "status": "success"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 20,
+                "prompt_tokens": 1534,
+                "total_tokens": 1554,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cache_write_tokens": null,
+                  "cached_tokens": 1408
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-4o-2024-08-06",
+              "system_fingerprint": "fp_e160a45017",
+              "id": "chatcmpl-EBFaPlSqw9ku1xA9FgAbVk9Snp1lP",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "name": null,
+            "id": "lc_run--019feac5-5652-7652-bb1d-013160f0f0ea-0",
+            "tool_calls": [
+              {
+                "name": "calculator",
+                "args": {
+                  "expression": "69300 * 0.10"
+                },
+                "id": "call_cs9K6tT1L9OQBqK2iHOQcmUb",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 1534,
+              "output_tokens": 20,
+              "total_tokens": 1554,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 1408
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "6930.0",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculator",
+            "id": "30ef0130-0e97-4047-b203-34cbd970913d",
+            "tool_call_id": "call_cs9K6tT1L9OQBqK2iHOQcmUb",
+            "artifact": null,
+            "status": "success"
+          },
+          {
+            "content": "10% of the Total Due in invoice INV-002 is $6,930.00.\n\n- **Total Due**: $69,300\n- **Calculation**: \\( 69,300 \\times 0.10 = 6,930 \\)\n\nThe values were obtained from document INV-002.",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 64,
+                "prompt_tokens": 1565,
+                "total_tokens": 1629,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cache_write_tokens": null,
+                  "cached_tokens": 1408
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-4o-2024-08-06",
+              "system_fingerprint": "fp_e160a45017",
+              "id": "chatcmpl-EBFaT3Ol0aPLR1lAoYkV1DVI2CHdE",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "name": null,
+            "id": "lc_run--019feac5-5b2c-7d40-b3ac-3de1be0008e6-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 1565,
+              "output_tokens": 64,
+              "total_tokens": 1629,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 1408
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ],
+        "structured_response": {
+          "expression": "69300 * 0.10",
+          "result": 6930.0,
+          "explanation": "10% of the Total Due in invoice INV-002 is $6,930.00.\n\n- Total Due: $69,300\n- Calculation: 69,300 * 0.10 = 6,930\n\nThe values were obtained from document INV-002.",
+          "units": "USD",
+          "timestamp": "2023-10-06T12:00:00+00:00"
+        }
+      },
+      "tools_used": [
+        "document_reader",
+        "calculator",
+        "calculator"
+      ],
+      "session_id": "d13860d6-0c6f-43ed-8a86-8640fa5972fe",
+      "user_id": "demo_user",
+      "actions_taken": [
+        "classify_intent",
+        "calculation_agent",
+        "update_memory"
+      ]
+    }
+  ],
+  "document_context": [
+    "INV-002",
+    "CLM-001",
+    "CON-001"
+  ],
+  "created_at": "2026-08-10T10:23:12.894392",
+  "last_updated": "2026-08-10T10:23:59.078102"
+}

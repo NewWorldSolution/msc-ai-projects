@@ -1,0 +1,26 @@
+[
+  {
+    "timestamp": "2026-08-10T10:21:16.978900",
+    "tool_name": "document_reader",
+    "input": {
+      "doc_id": "CON-001"
+    },
+    "output": "{'found': True, 'doc_type': 'contract'}"
+  },
+  {
+    "timestamp": "2026-08-10T10:21:37.703843",
+    "tool_name": "document_reader",
+    "input": {
+      "doc_id": "INV-001"
+    },
+    "output": "{'found': True, 'doc_type': 'invoice'}"
+  },
+  {
+    "timestamp": "2026-08-10T10:21:38.795024",
+    "tool_name": "calculator",
+    "input": {
+      "expression": "0.10 * 20000"
+    },
+    "output": "{'result': 2000.0}"
+  }
+]
