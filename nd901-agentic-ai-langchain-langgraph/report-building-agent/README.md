@@ -15,11 +15,19 @@ decisions below prioritise traceability over convenience.
 
 ```bash
 pip install -r requirements.txt
-cp env.example .env      # then add your OpenAI API key to .env
+cp env.example .env
 python main.py
 ```
 
-`.env` is git-ignored and is never committed.
+After copying, edit `.env` and set two values:
+
+| Variable | Notes |
+|---|---|
+| `OPENAI_API_KEY` | Your API key. |
+| `base_url` | Leave as supplied (`https://openai.vocareum.com/v1`) when using a Udacity/Vocareum key — one beginning with `voc-`. Those keys must be routed through the Vocareum proxy and are rejected by OpenAI's default endpoint. Clear this line if you are using a standard `sk-` key. |
+
+`.env` is git-ignored and is never committed. `env.example` shows the required
+variables and contains no real values.
 
 ## Project structure
 
