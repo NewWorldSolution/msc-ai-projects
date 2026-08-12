@@ -1,0 +1,11 @@
+HVAC Optimization for a Solar and Time-of-Use Home
+
+Heating and cooling loads are often flexible for short periods because the building itself stores heat. Use that thermal inertia deliberately. When a hot afternoon overlaps with expensive electricity, cool the home moderately before the peak period, then allow the thermostat to drift within the occupants' comfort range. In winter, the same idea can be used for preheating. Avoid large setpoint changes that cause the system to run continuously or activate inefficient backup heat.
+
+Coordinate HVAC operation with the hourly weather forecast. Outdoor temperature, humidity and cloud cover help determine how quickly indoor conditions will change. Solar irradiance is also useful when the home has rooftop photovoltaic generation: running more of the HVAC load during strong production can increase solar self-consumption. Price and solar availability should be checked together rather than assuming that midday or overnight is always best.
+
+Use a schedule that reflects occupancy. Reduce heating or cooling when the home is empty, but begin recovery early enough to avoid a high-power catch-up period during an expensive tariff window. Smart thermostats should retain safety limits, minimum run times and equipment-specific constraints. Heat pumps may need a gradual recovery strategy so that an aggressive temperature increase does not trigger resistance heating.
+
+Maintenance protects the expected savings. Replace or clean filters at the manufacturer's interval, keep supply and return vents unobstructed, inspect outdoor equipment, and seal obvious duct leakage. Poor airflow increases run time and can hide the benefit of a better schedule. Use ceiling fans when rooms are occupied; they improve perceived comfort but should be switched off in empty rooms because they cool people rather than the building.
+
+Evaluate changes with comparable data. Compare energy use across days with similar outdoor conditions, and separate HVAC records from other appliances. A lower bill on a mild day is not proof that a new thermostat schedule caused the improvement. Preserve comfort and equipment safety as operating constraints, then optimize the remaining flexible hours around solar production and the applicable HVAC tariff.

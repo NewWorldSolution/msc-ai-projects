@@ -1,0 +1,11 @@
+Smart-Home Automation for Flexible Energy Loads
+
+Effective automation turns an energy recommendation into a repeatable operating rule. Begin by separating household loads into three groups: fixed loads that must run immediately, flexible loads that can move within a time window, and interruptible loads that can pause safely. Electric-vehicle charging, dishwashers, washing machines, dryers and pool pumps are commonly flexible, but each device still needs a completion deadline and user override.
+
+Build schedules from current information rather than from fixed assumptions. Check the device-specific electricity tariff, the local weather forecast and expected solar irradiance. Select only future hours, and avoid scheduling a device into a period that has already passed. If the forecast or tariff service fails, retain the last safe schedule or ask the user for a decision instead of inventing a price or production value.
+
+Prevent simultaneous starts from creating a new household peak. A simple priority order can stagger large devices: essential comfort and safety loads first, devices with a departure or completion deadline second, and convenience appliances last. Limit total controllable power when the electrical service, inverter or battery has a known capacity constraint. A recommendation to run everything at noon may increase solar use but still overload the system or import power from the grid.
+
+Automations should be observable. Record the chosen start time, the reason for the decision, the forecast and price data used, and whether the user overrode it. Notify the household when a schedule changes materially. Provide a manual-start option and a clear way to disable automation for maintenance, guests or unusual routines.
+
+Review performance periodically. Compare scheduled hours with actual device operation, solar generation and cost. Repeated overrides indicate that the automation does not reflect the user's real constraints. Update deadlines and comfort preferences before changing the optimization rule. The best smart-home schedule is not merely the mathematically cheapest one; it is the cheapest safe schedule that reliably completes the household's required work.

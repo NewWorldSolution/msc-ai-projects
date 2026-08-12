@@ -1,0 +1,11 @@
+Seasonal Energy Management for Smart Homes
+
+An energy schedule should change with daylight, weather and occupancy rather than repeat unchanged throughout the year. Longer summer days usually widen the solar-production window, while winter reduces both its duration and its peak. Heating and cooling loads also change direction and magnitude. Review schedules at the start of each season and whenever a major change in daylight or outdoor temperature makes the previous pattern unreliable.
+
+In warm periods, reduce solar heat gain before increasing mechanical cooling. Use exterior shading where appropriate, close coverings on sun-exposed windows, seal air leaks and operate ceiling fans in occupied rooms. Schedule pool pumps and flexible appliances around forecast solar production and device-specific prices. Pre-cooling may reduce expensive afternoon operation when the building can maintain comfort safely through the peak period.
+
+In cold periods, protect heat-pump efficiency. Use gradual thermostat recovery and avoid changes that unnecessarily activate resistance backup heat. Schedule water heating, laundry and vehicle charging with the shorter solar window in mind. Maintain a suitable battery reserve when outages or severe weather are plausible, rather than consuming all stored energy for a small tariff difference.
+
+Spring and autumn are useful commissioning periods. Inspect HVAC filters and outdoor equipment, review thermostat schedules, check weather seals, and confirm that automated device clocks still match local time after daylight-saving changes. A schedule based only on clock hour can shift relative to solar noon, so use timezone-aware forecast timestamps.
+
+Measure seasonal performance with comparable periods. Separate changes caused by weather from changes caused by the optimization. Heating-degree or cooling-degree patterns, occupancy and daylight should be considered when comparing bills. Use historical data to identify recurring seasonal loads, then use current forecasts and tariffs to make the next scheduling decision. Keep safety, comfort, equipment limits and user deadlines fixed; optimize only the flexible portion of demand.

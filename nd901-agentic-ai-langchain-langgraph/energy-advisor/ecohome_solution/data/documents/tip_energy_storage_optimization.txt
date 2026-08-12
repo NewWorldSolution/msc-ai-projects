@@ -1,0 +1,11 @@
+Home Battery and Energy Storage Optimization
+
+A home battery can shift energy across time, support solar self-consumption and provide backup power. Define the objective before scheduling it: lowest electricity cost, maximum use of rooftop solar, backup readiness, or a stated balance of these goals. A battery cannot maximize every objective simultaneously, so recommendations should explain the chosen trade-off.
+
+For solar self-consumption, preserve enough empty capacity to absorb expected midday production, then discharge later when household demand exceeds generation. For tariff savings, charge from solar or during an allowed low-price period and discharge during the applicable high-price period. Use the all-in electricity rate and do not add an already included peak component twice. Check local utility rules before charging from the grid or exporting stored energy.
+
+Account for losses and battery wear. Charging one kilowatt-hour does not normally make the full kilowatt-hour available later because the inverter and battery have round-trip losses. Small tariff differences may not justify an extra cycle. Follow the manufacturer's usable state-of-charge range, power limits, temperature limits and warranty conditions. Do not recommend charging or discharging beyond those constraints.
+
+Maintain a reserve when backup power matters. The reserve should reflect essential loads, expected outage duration, weather risk and the next opportunity to recharge. Avoid draining the battery for a minor saving immediately before severe weather. Essential medical, safety and communications equipment should not depend on an optimization that can consume the protected reserve.
+
+Coordinate the battery with flexible devices. Direct solar production into an electric vehicle, water heater or appliance when that is more efficient than charging and later discharging the battery. Stagger large loads so their combined power does not exceed the inverter or service limit. Review actual state of charge, imports, exports and curtailed solar after operation. If forecasts repeatedly overestimate production, increase the reserve or reduce planned discharge rather than assuming the missing energy will appear.

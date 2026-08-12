@@ -1,0 +1,11 @@
+Integrating Rooftop Solar with Household Energy Use
+
+Rooftop photovoltaic generation has the greatest household value when flexible consumption overlaps with production. Use hourly solar irradiance forecasts to identify likely production windows, then schedule suitable devices inside those windows when their operating constraints allow it. Midday is often productive, but the forecast should decide; cloud, fog and seasonal daylight can shift or reduce the useful period.
+
+Prioritize loads that can absorb solar energy without reducing comfort. Electric-vehicle charging, water heating, dishwashing, laundry and pool filtration may be shifted more easily than cooking, lighting or occupied-room HVAC. Stagger large loads instead of starting all of them at the irradiance peak. The objective is to keep controllable demand near available production, not to create a short demand spike that exceeds the inverter output and draws the remainder from the grid.
+
+Compare the solar opportunity with the electricity tariff. If midday grid prices are low, moving a load into the solar window may support both cost and self-consumption. If the cheapest price occurs overnight, state the trade-off clearly. Use the household's chosen priority rule rather than claiming that maximum solar use is automatically the lowest-cost decision.
+
+Historical generation is useful for setting expectations, but it is not a substitute for tomorrow's forecast. Compare forecast conditions with historical days that had similar weather, season and daylight. Solar irradiance is an instantaneous power-related measure in watts per square metre; it is not household energy in kilowatt-hours. Do not convert irradiance directly to expected kWh without panel area, efficiency, orientation and system-loss assumptions.
+
+Monitor actual results after scheduling. Check whether the device ran during generation, how much power was still exported, and whether grid imports fell. Investigate inverter clipping, shading, curtailment or equipment faults when measured production differs consistently from comparable forecasts. Safe electrical limits, manufacturer instructions and utility interconnection rules remain constraints on every optimization decision.
