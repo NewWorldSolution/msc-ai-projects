@@ -1,0 +1,37 @@
+# UDA-Hub — pinned to the versions the nd901 course notebooks are proven against.
+# Python 3.13.5. Install:  python -m venv .venv && .venv/bin/pip install -r requirements.txt
+#
+# Kept BELOW langchain-core 1.x on purpose: the course material and the
+# checkpoint library are 0.3-era. langchain-mcp-adapters is deliberately absent —
+# it forces langchain-core 1.6+, verified by dry-run on 2026-09-07.
+
+# LangChain / LangGraph core (mirrors the working shared venv)
+langchain==0.3.30
+langchain-core==0.3.86
+langchain-openai==0.3.35
+langchain-community==0.3.31
+langchain-text-splitters==0.3.11
+langgraph==0.6.11
+langgraph-checkpoint==3.0.1
+langgraph-prebuilt==0.6.5
+langgraph-sdk==0.2.15
+openai==2.53.0
+tiktoken==0.13.0
+pydantic==2.13.4
+
+# Memory — short-term (SqliteSaver) and long-term (SqliteStore with embedding index)
+langgraph-checkpoint-sqlite==3.0.3
+langmem==0.0.30
+
+# Knowledge retrieval
+langchain-chroma==0.2.6
+chromadb==1.5.9
+
+# Data layer
+SQLAlchemy==2.0.51
+python-dotenv==1.2.2
+
+# Notebooks and tests
+ipykernel==7.3.0
+nest-asyncio==1.6.0
+pytest==8.4.1

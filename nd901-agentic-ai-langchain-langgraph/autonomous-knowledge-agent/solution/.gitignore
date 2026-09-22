@@ -1,0 +1,19 @@
+# Never commit secrets. .env is also ignored at the repo root; this is the
+# belt-and-braces copy that travels with the submitted folder.
+.env
+
+# Udacity DON'T: "submit large .db files". The setup notebooks rebuild these
+# from the .jsonl files, so they are regenerable, not source.
+*.db
+
+# Regenerable vector store
+chroma/
+.chroma/
+chromadb/
+
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+
+.pytest_cache/

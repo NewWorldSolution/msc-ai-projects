@@ -1,0 +1,23 @@
+# Local resources are not part of this source backup.
+.env
+.env.*
+!solution/.env.example
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.DS_Store
+*.db
+*.sqlite
+*.sqlite3
+*-wal
+*-shm
+*-journal
+chroma/
+.chroma/
+chromadb/
+faiss_index/
