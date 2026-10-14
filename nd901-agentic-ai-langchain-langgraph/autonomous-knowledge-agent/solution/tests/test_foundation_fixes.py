@@ -1,4 +1,4 @@
-"""Regression tests for the September foundation fixes; no external services."""
+"""Regression tests for the database, retrieval and workflow foundations; no external services."""
 
 from contextlib import contextmanager
 import sqlite3

@@ -1,4 +1,4 @@
-"""Review-prompt and classifier rules from the 2026-10-12 decisions; no provider calls."""
+"""Review-prompt and classifier rules; fake models, no provider calls."""
 
 from unittest.mock import Mock
 

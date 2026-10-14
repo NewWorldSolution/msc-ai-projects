@@ -18,7 +18,7 @@ persistence helpers, with a passing local test suite.
 ## Lesson patterns to follow
 
 [Architecture 5.9](design/ARCHITECTURE.md#59-implementation-style-from-the-lessons)
-maps the actual notebooks to this scaffold. LangGraph connects nodes through
+maps the course notebooks to this package. LangGraph connects nodes through
 StateGraph, explicit edges and Supervisor's Command, with reducers and SQLite
 checkpoint/store persistence. Supervisor routes in code and calls a model only
 for draft review. LangChain supplies ChatPromptTemplate, structured model results,

@@ -1,4 +1,4 @@
-# UDA-Hub — Multi-Agent Architecture Design
+# UDA-Hub: Multi-Agent Architecture Design
 
 **Project:** nd901 Course 3, Autonomous Knowledge Agent
 
@@ -13,7 +13,7 @@ implemented with a passing local test suite and no skipped tests. Part A specifi
 version built. Part B records future work and is explicitly outside the submission
 implementation target.
 
-# Part A — Submission design
+# Part A: Submission design
 
 ## 1. Purpose and scope
 
@@ -57,11 +57,14 @@ is the first agent after Intake and the last agent before Persist. Classifier,
 Knowledge, Operations, Response and Escalation all return their results to
 Supervisor; no specialist hands the case directly to another specialist or Persist.
 
-My reasons at the time:
+My reasons:
 
-- “direct lookup in intake, with six agents and a separate response agent. That keeps the flow simpler and responsibilities clearer.”
-- “if I give this role to supervisor, it needs to select all agents tools … it will be too much job for supervision” — excerpt of my explanation.
-- “the review must check the draft against both support articles and tool results, and check whether the request was actually handled.”
+- A direct customer lookup in Intake, six agents and a separate Response agent keep the
+  flow simple and the responsibilities clear.
+- If the Supervisor also had to pick every specialist's tools, supervision would become
+  too much work for one node. The specialists own their tools instead.
+- The review must check the draft against both the support articles and the tool
+  results, and check whether the request was actually handled.
 
 LangGraph connects the nodes and owns shared state, routing and checkpointed
 execution. LangChain supplies prompts, chat-model calls, structured outputs,
@@ -234,10 +237,10 @@ answers the reviewer also lists `unsupported_sentences`, every draft sentence it
 article or record. A listed sentence that lies inside a mapped claim, or that is the
 returning-customer acknowledgement, is judged through that claim or through memory; a listed
 sentence that no claim covers fails the grounding check in code and is written into the
-grounding findings and revision reasons. Clarifications are exempt, because the reviewer listed the
-clarification question itself on a live run.
-A computed list of sentences without a claim was tried earlier and withdrawn because it turned
-the review into a coverage check.
+grounding findings and revision reasons. Clarifications are exempt, because in one test run the reviewer listed the clarification
+question itself. I also tried handing the reviewer a computed list of every sentence without
+a claim; that turned the review into a coverage check and rejected good answers, so it was
+dropped.
 A visit to Supervisor does not itself imply a model call. Log actual
 calls, including permitted retries, rather than assuming a fixed count per ticket.
 
@@ -295,7 +298,7 @@ An output failure is distinct from a valid `unknown` or `unsupported` issue.
 | `unknown` | The customer's intended issue cannot be understood yet. |
 | `unsupported` | The request is understood but outside the stated support scope. |
 
-One request may contain several issues. “Cancel my subscription” is a subscription
+One request may contain several issues. "Cancel my subscription" is a subscription
 issue even though the agent cannot execute cancellation. Missing details may be
 available through Operations instead of requiring a question to the customer.
 One issue per distinct request: the same request in two wordings is one issue, a
@@ -309,9 +312,9 @@ task text is identical after normalisation, or contained in the other when one r
 unknown or unsupported (two classified requests are never merged; a classified reading is
 kept over an unknown or unsupported one; unknown against unsupported on the same text is
 sent to the one repair call, after which the first reading stands), and drops `unknown` issues
-when a classified issue is present. Asking the model to confirm these cases instead was tried
-and withdrawn: it kept the hedge two times in three and blocked the answer behind a
-clarification. The accepted cost is that a genuine second vague remark beside a clear request
+when a classified issue is present. I also tried asking the model to confirm these cases instead of deciding in code; it
+kept the hedge two times in three and blocked the answer behind a clarification, so the
+rule stays in code. The accepted cost is that a genuine second vague remark beside a clear request
 is not acted on in that turn and must come back as a follow-up.
 Missing information or required facts that name a credential are removed in code and counted.
 A stated preference that is not a quote from the current message, for example one
@@ -366,7 +369,7 @@ else was missing the guidance applies. Facts listed under applicability `applies
 when they match a fact a completed lookup was asked for this turn; otherwise the assessment goes to
 the repair call with a message asking for `missing_facts` or no facts.
 Update timestamps do not prove approval or freshness. No detected conflict is not
-proof that none exists elsewhere. No arbitrary “reliability score” is introduced.
+proof that none exists elsewhere. No arbitrary "reliability score" is introduced.
 
 **Success:** return evidence or precise gaps for every assigned issue, without
 inventing policy or discarding another issue's accepted evidence.
@@ -468,8 +471,8 @@ the system remembers them, so two replies to the same request are not identical.
 model is asked to open a resolved answer with one natural sentence that acknowledges the
 earlier help or a stated preference, and to declare that sentence in
 `history_acknowledgement`, a required field; for a returning customer the instruction is
-repeated as its own message next to the recalled memory, because a rule inside the long
-system prompt was ignored on a live run. The application accepts the declared sentence when it is in
+repeated as its own message next to the recalled memory, because the same rule inside the
+long system prompt was ignored in a test run. The application accepts the declared sentence when it is in
 the body, signals earlier contact (a fixed marker list: "welcome back", "before",
 "you asked" and similar) and names something the memory names; otherwise it accepts the
 body's opening sentence when that one qualifies; otherwise it opens the body with a fixed
@@ -542,7 +545,7 @@ if a Supervisor-authorized escalated terminal result lacks a handoff.
 Keep one issue list and one shared article list. Each issue has its coverage,
 article references and targeted-retry flag. Each article records the issues it
 supports. There is no separate merged `evidence_pack` state field duplicating them.
-“Evidence pack” in agent descriptions means this combined view, not another store.
+"Evidence pack" in agent descriptions means this combined view, not another store.
 
 | State group | Ownership / lifetime |
 |---|---|
@@ -705,10 +708,10 @@ An empty result records `gate_pass: false`, `score: null`, the configured thresh
 and `reason: no_candidates`; no score is invented for an absent article. The score
 gate is separate from sufficiency, applicability and final-response review.
 
-The rubric says: “All responses are based on the content of knowledge base articles”.
+The rubric says: "All responses are based on the content of knowledge base articles".
 The design grounds substantive support answers in articles. A clarification can
 follow a missing-detail assessment and an acknowledgement can accompany no relevant
-knowledge. This interpretation is explicit, not claimed to have reviewer approval.
+knowledge. That is my reading of the rubric line, stated here so it can be checked.
 
 ### 5.5 Intake and customer identity
 
@@ -859,11 +862,11 @@ attempted thread through `get_state` and `get_state_history`, showing conversati
 tool usage, trace events and stored memory. Per-turn reports retain the memory
 recalled at Intake so the returning-customer example can be checked.
 
-**Verified environment evidence, 2026-09-08:** all 21 pinned distributions in the
-solution requirements matched the project virtual environment, and the inspected
-LangChain/LangGraph, SQLite checkpoint/store, Chroma, model-client and data-layer
-imports passed. This was an existing-environment version/import check, not proof of
-a fresh installation, API connectivity or successful end-to-end workflow execution.
+The pinned requirements were checked against the project's virtual environment: all 21
+distributions matched, and the LangChain/LangGraph, SQLite checkpoint/store, Chroma,
+model-client and data-layer imports passed. That is a version and import check of an
+existing environment, not proof of a fresh installation or of API connectivity; the
+test suite and the saved notebook runs cover the rest.
 
 ### 5.9 Implementation style from the lessons
 
@@ -879,8 +882,8 @@ rules.
 | Explicit graph construction | Advanced L2 blog pipeline solution (course exercise, outside this package) | `StateGraph(CaseState)`, `add_node`, `add_edge`, then `compile(checkpointer=..., store=...)` in the factory. All five specialists return to Supervisor. |
 | Supervisor routing | my Advanced lesson 1 multi-agent exercise (course exercise, outside this package) | Use ordinary conditions and `Command(update=..., goto=...)`. Only Supervisor selects a next node in this project. |
 | Prompts and structured results | Advanced L4 routing demo (course exercise, outside this package) | `ChatPromptTemplate` → `prompt.invoke(inputs)` → `model.with_structured_output(Schema).invoke(prompt_value)` → validated result. Classifier already declares its Pydantic schema; review and other semantic outputs follow their agent contracts. |
-| Specialist tool selection | LangGraph L3 text-to-SQL solution (course exercise, outside this package) | `@tool` exposes permitted lookups and `model.bind_tools(...)` lets Operations request them. Execute validated requests through the selected tool’s `.invoke(..., config=config)` and return actual structured lookup results. |
-| Article retrieval | LangGraph L4 knowledge-base solution (course exercise, outside this package) | Use Chroma/LangChain documents with source metadata. Extend the lesson’s document-only search with `similarity_search_with_relevance_scores`, then apply the agreed numeric gate and evidence checks. |
+| Specialist tool selection | LangGraph L3 text-to-SQL solution (course exercise, outside this package) | `@tool` exposes permitted lookups and `model.bind_tools(...)` lets Operations request them. Execute validated requests through the selected tool's `.invoke(..., config=config)` and return actual structured lookup results. |
+| Article retrieval | LangGraph L4 knowledge-base solution (course exercise, outside this package) | Use Chroma/LangChain documents with source metadata. Extend the lesson's document-only search with `similarity_search_with_relevance_scores`, then apply the agreed numeric gate and evidence checks. |
 | Conversation persistence | Advanced L4 persisting-memory demo (course exercise, outside this package) | Use `SqliteSaver` and `configurable.thread_id`; inspect with `get_state` / `get_state_history`. The ticket ID identifies the conversation. |
 | Memory across tickets | Advanced L4 LangMem demo (course exercise, outside this package) | Apply the demonstrated store/namespace concept through the injected long-term store. This project uses SQLite and account/customer scope; eligible memory writes remain controlled by Persist. |
 
@@ -907,41 +910,40 @@ Notebook 03 prints `get_graph().draw_mermaid()`; inspect it or
 
 ## 6. Eight executable scenario groups
 
-Each group becomes a focused test with parameterized variants where useful. These
-are planned checks, not currently passing results. Use controlled agent/tool outputs
-for deterministic route tests and separately inspect live retrieval/model examples.
+Each group is covered by focused tests with parameterised variants where useful.
+Controlled agent and tool outputs drive the deterministic route tests; live retrieval
+and model behaviour are inspected separately in notebook 03.
 
 | Group | Scenario and required assertions |
 |---|---|
-| T1 — grounded resolution and channel format | Verify Intake -> Supervisor -> Classifier -> Supervisor, with no repeated classification after its result. Generic how-to retrieves an article without an unnecessary lookup; approved answer covers the question. Chat body and email-format variants; no email-send claim. |
-| T2 — Operations and tool outcomes | Subscription/reservation facts require appropriate tool selection. Exercise only each mode's possible outcomes: unique-key customer/email and subscription lookups cannot be ambiguous; reservation/event-detail matching can. Check missing/conflicting keys and transient/non-retryable failure; no writes or failure interpreted as absent records. |
-| T3 — multiple issues | Preserve answered-issue evidence while another gets a targeted retry. Include more than one unanswered issue to verify independent allowances; resolve only when every issue is supported. |
-| T4 — clarification and identity | Normal and urgent unknown requests can receive an approved clarification; next reply uses checkpointed context. ID/email correction occurs once; email match never repairs a different ticket mapping. Missing, consistent and mismatched results are explicit. |
-| T5 — evidence and metadata escalation | No relevant initial evidence, targeted insufficiency, conflicting guidance and blocked-account variants. Missing business fact instead requests a lookup/reassessment. Assert score/threshold/pass-fail together in gate events and urgency/complexity in classification events and handoffs. No unsupported partial resolution. |
-| T6 — review and terminal failures | New evidence, renamed work and resolved/clarification switches never reset the original-stage counter. Blockers do not count as reviews. One acknowledgement stage only; exhausted content/technical paths save handoff without reply. Escalation generation/validation failure immediately uses deterministic fallback. Generated/fallback handoffs both return to Supervisor; fallback reaches Persist through deterministic routing without another model call. |
-| T7 — persistence and conversation | Supervisor is the only graph predecessor of Persist. Persist returns only the approved-message delta after a successful support write; repeated same-ID updates merge through add_messages without duplicates. Rejected drafts, failed writes and handoff-only outcomes add no reply. Graph checkpoint/presentation failures are explicit; no application-side conversation update or last-message substitute. |
-| T8 — returning-customer memory | Successful explicit preference/resolved-issue storage and recall on another ticket. Current business facts refreshed; historical/rejected content does not become current evidence. Memory-failure variant reports failure without losing the core saved outcome. |
+| T1: grounded resolution and channel format | Verify Intake -> Supervisor -> Classifier -> Supervisor, with no repeated classification after its result. Generic how-to retrieves an article without an unnecessary lookup; approved answer covers the question. Chat body and email-format variants; no email-send claim. |
+| T2: Operations and tool outcomes | Subscription/reservation facts require appropriate tool selection. Exercise only each mode's possible outcomes: unique-key customer/email and subscription lookups cannot be ambiguous; reservation/event-detail matching can. Check missing/conflicting keys and transient/non-retryable failure; no writes or failure interpreted as absent records. |
+| T3: multiple issues | Preserve answered-issue evidence while another gets a targeted retry. Include more than one unanswered issue to verify independent allowances; resolve only when every issue is supported. |
+| T4: clarification and identity | Normal and urgent unknown requests can receive an approved clarification; next reply uses checkpointed context. ID/email correction occurs once; email match never repairs a different ticket mapping. Missing, consistent and mismatched results are explicit. |
+| T5: evidence and metadata escalation | No relevant initial evidence, targeted insufficiency, conflicting guidance and blocked-account variants. Missing business fact instead requests a lookup/reassessment. Assert score/threshold/pass-fail together in gate events and urgency/complexity in classification events and handoffs. No unsupported partial resolution. |
+| T6: review and terminal failures | New evidence, renamed work and resolved/clarification switches never reset the original-stage counter. Blockers do not count as reviews. One acknowledgement stage only; exhausted content/technical paths save handoff without reply. Escalation generation/validation failure immediately uses deterministic fallback. Generated/fallback handoffs both return to Supervisor; fallback reaches Persist through deterministic routing without another model call. |
+| T7: persistence and conversation | Supervisor is the only graph predecessor of Persist. Persist returns only the approved-message delta after a successful support write; repeated same-ID updates merge through add_messages without duplicates. Rejected drafts, failed writes and handoff-only outcomes add no reply. Graph checkpoint/presentation failures are explicit; no application-side conversation update or last-message substitute. |
+| T8: returning-customer memory | Successful explicit preference/resolved-issue storage and recall on another ticket. Current business facts refreshed; historical/rejected content does not become current evidence. Memory-failure variant reports failure without losing the core saved outcome. |
 
 ## 7. Decisions, preparation and submission checks
 
-The confirmed behaviour remains: specialist-owned tools, narrow Intake,
-read-only Operations, multiple issues with independent targeted retries,
-outcome-specific reviewed responses, and immediate deterministic handoff fallback.
-My 2026-09-09 clarification puts Supervisor before Classifier and requires every
-specialist, including Escalation, to return to Supervisor. This supersedes the former
-Intake-to-Classifier and direct Escalation-to-Response/Persist routing shortcuts;
-Supervisor remains the final decision-maker before the deterministic save.
-The submission simplification changes their implementation machinery, not those
-behaviours. No fixed acknowledgement template replaces the agreed Response stage.
+The behaviour I settled on: specialist-owned tools, a narrow Intake, read-only
+Operations, several issues per request with independent targeted retries,
+outcome-specific reviewed responses, and an immediate deterministic handoff fallback.
+A later decision put Supervisor before Classifier and required every specialist,
+including Escalation, to return to Supervisor. That replaced the earlier shortcuts
+(Intake straight to Classifier, Escalation straight to Response or Persist) and keeps
+Supervisor as the last decision-maker before the save. No fixed acknowledgement
+template replaces the Response stage.
 
-My stated reasons also include:
+Three further reasons behind the design:
 
-- “We should not add write actions until there is a clear policy and data model for them.”
-- “Older results remain available as history but cannot become accidental evidence for a new request.”
-- “By this stage, another model call adds no verified facts. It only tries to improve wording, while the important business outcome is preserving the case for a human.”
+- No write actions until there is a clear policy and a data model for them.
+- Older results stay available as history but can never become accidental evidence for
+  a new request.
+- Once escalation is decided, another model call adds no verified facts. It would only
+  polish wording, while what matters is preserving the case for a human.
 
-This lesson-alignment pass closes the planned documentation review. Further
-architecture changes should follow concrete implementation or test findings.
 The build followed this order: state and workflow wiring, Intake/support helpers,
 deterministic Supervisor routes and Persist first, tested with fixed specialist outputs
 and a fixed draft-review result, then the model-backed specialists one at a time. The
@@ -951,8 +953,8 @@ skipped tests.
 The documented `trace_events` model is part of the support schema. Notebook 02 requires
 at least 14 articles before it creates ticket fixtures; the supplied four were extended
 with ten support articles, including blocked-account handling, and notebook 03 rebuilds
-the Knowledge store on each run. Keep
-that setup guard. Fixture-based routing tests can run before article expansion;
+the Knowledge store on each run. That
+guard stays. Fixture-based routing tests can run before article expansion;
 a real-data demo through that notebook cannot. Use the actual data's scope; do not
 invent payment/refund records or assume stored quota establishes remaining usage
 without a defined counting rule.
@@ -963,14 +965,14 @@ Selected exact rubric requirements and their design locations:
 
 | Exact requirement | Design reference |
 |---|---|
-| “Implementation matches the documented architecture design” | Part A is the implementation target; Part B is explicitly excluded. |
-| “Routing logic considers ticket content and metadata (e.g. date, urgency, complexity...)” | Category-based lookup/how-to routes and blocked-account override, 5.2. This wording does not require every example to create its own branch. |
-| “Knowledge base includes at least 10 additional support articles beyond the provided 4” | Article preparation above. |
-| “All responses are based on the content of knowledge base articles” | Interpretation explicitly stated in 5.4. |
-| “System includes confidence scoring to determine when to escalate” | Retrieval-score gate and observed threshold selection, 5.4. |
-| “Implement at least 2 functional tools for support operations (e.g., account lookup, subscription management, refund processing)” | Read-only customer/subscription/reservation/experience tools, 4.4 and T2. |
-| “Long-term memory is used to store resolved issues and customer preferences accross different sessions” | 5.7 and T8. |
-| “All logs are structured and searchable” | `trace_events`, 5.6 and T7. |
+| "Implementation matches the documented architecture design" | Part A is the implementation target; Part B is explicitly excluded. |
+| "Routing logic considers ticket content and metadata (e.g. date, urgency, complexity...)" | Category-based lookup/how-to routes and blocked-account override, 5.2. This wording does not require every example to create its own branch. |
+| "Knowledge base includes at least 10 additional support articles beyond the provided 4" | Article preparation above. |
+| "All responses are based on the content of knowledge base articles" | Interpretation explicitly stated in 5.4. |
+| "System includes confidence scoring to determine when to escalate" | Retrieval-score gate and observed threshold selection, 5.4. |
+| "Implement at least 2 functional tools for support operations (e.g., account lookup, subscription management, refund processing)" | Read-only customer/subscription/reservation/experience tools, 4.4 and T2. |
+| "Long-term memory is used to store resolved issues and customer preferences accross different sessions" | 5.7 and T8. |
+| "All logs are structured and searchable" | `trace_events`, 5.6 and T7. |
 
 The code and saved demonstrations exist; the local test suite and the saved notebook
 outputs are the evidence. The [shared state](../state.py),
@@ -978,11 +980,9 @@ outputs are the evidence. The [shared state](../state.py),
 interfaces match this document; the agent and tool bodies are implemented. The
 [chat and batch interfaces](../../utils.py)
 apply the approved-response/persistence guard before presenting any wording.
-[Requirements](../../requirements.txt) identify the verified existing-environment
-baseline. Submission rationale here uses the decisions already discussed; it does
-not invent a first-person reflection or require files outside the solution.
+[Requirements](../../requirements.txt) pin the environment the runs were made in.
 
-# Part B — Future hardening, deliberately out of scope
+# Part B: Future hardening, deliberately out of scope
 
 These items are design considerations, not implementation promises or acceptance
 criteria for this submission. Adding them later requires updating Part A and tests.

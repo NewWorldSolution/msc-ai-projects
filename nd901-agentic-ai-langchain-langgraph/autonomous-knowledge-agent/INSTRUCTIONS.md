@@ -1,20 +1,20 @@
-# Project Instructions — nd901 · Course 3 · Autonomous Knowledge Agent (UDA-Hub)
+# Project Instructions: nd901, Course 3, Autonomous Knowledge Agent (UDA-Hub)
 
-**Source**: classroom → nd901 → *Course 3: Advanced Agentic AI Techniques* → **Project: Autonomous Knowledge Agent**
-**Captured**: 2026-09-07 · **Starter inspected**: 2026-09-07
-**Rubric**: [`rubric.md`](./rubric.md) — verbatim, never paraphrased.
+**Source**: classroom, nd901, *Course 3: Advanced Agentic AI Techniques*, **Project: Autonomous Knowledge Agent**.
+Copied on 2026-09-07, the day I inspected the starter.
+**Rubric**: [`rubric.md`](./rubric.md), copied word for word.
 
 > The classroom calls this project **"Autonomous Knowledge Agent"**; the scenario
 > calls the product **"UDA-Hub"**, a Universal Decision Agent, with **CultPass**
 > as its first paying account. Same project.
 > Udacity supplied a numbered instruction list here (Design / Setup / Agentic
-> Workflow / Run), reproduced verbatim in Part 1. The work breakdown in Part 2 is
-> **derived** — from those instructions, the `# TODO:` markers in the starter, and
-> the rubric — and is mine, not Udacity's.
+> Workflow / Run), reproduced word for word in Part 1. The work breakdown in Part 2
+> is mine: I derived it from those instructions, the `# TODO:` markers in the
+> starter, and the rubric.
 
 ---
 
-# Part 1 — Udacity's text (verbatim)
+# Part 1: Udacity's text, word for word
 
 ## Project Scenario
 
@@ -126,7 +126,7 @@ If you have installed a package, share the name and version in the documentation
 
 ---
 
-# Part 2 — Derived work breakdown (mine, not Udacity's)
+# Part 2: My work breakdown
 
 Order matters: the rubric grades that the implementation *matches* the design
 document, so the design is written first and nothing else starts until it exists.
@@ -149,14 +149,14 @@ document, so the design is written first and nothing else starts until it exists
 - **`create_react_agent` is banned for the orchestrator.** "create the graph from
   scratch. Do not use the prebuilt workflow." This is the same call already made
   and logged for Energy Advisor in my study notes (2026-08-12).
-  It does *not* obviously ban it for the leaf agents — decide that in step 1 and
+  It does *not* obviously ban it for the leaf agents; decide that in step 1 and
   log the decision.
 - **No imports reaching outside `solution/`.** Every path inside the solution is
   relative to it. This is why the instructions flag relative/absolute paths.
-- **`.db` files are not submitted** — the setup notebooks must rebuild them from
+- **`.db` files are not submitted**: the setup notebooks must rebuild them from
   the `.jsonl` files on a clean clone.
 - **`.env` is not submitted**; ship an `.env.example` carrying
   `OPENAI_BASE_URL=https://openai.vocareum.com/v1`, or a reviewer running from a
   clean clone gets an auth error. This exact gap was caught once already.
-- **FastMCP is a recommendation, not a requirement** — "I strongly recommend".
+- **FastMCP is a recommendation, not a requirement**: "I strongly recommend".
   It appears again under Suggestions to Make Your Project Stand Out.

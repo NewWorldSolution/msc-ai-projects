@@ -1,8 +1,7 @@
-# Rubric — nd901 · Course 3 · Project: Autonomous Knowledge Agent
+# Rubric: nd901, Course 3, Project: Autonomous Knowledge Agent
 
-**Source**: classroom → nd901 → *Course 3: Advanced Agentic AI Techniques* → **Project: Autonomous Knowledge Agent** → Rubric tab
-**Captured**: 2026-09-07 — pasted as text, then verified against screenshots of the
-rubric tab criterion by criterion. Not OCR'd.
+**Source**: classroom, nd901, *Course 3: Advanced Agentic AI Techniques*, **Project: Autonomous Knowledge Agent**, Rubric tab.
+Copied as text on 2026-09-07 and checked against screenshots of the rubric tab, criterion by criterion.
 
 Implementation instructions: [`INSTRUCTIONS.md`](./INSTRUCTIONS.md).
 Starter scaffold: [`starter/`](./starter/). Submission goes in `solution/`.
@@ -13,7 +12,7 @@ Starter scaffold: [`starter/`](./starter/). Submission goes in `solution/`.
 
 **Structure note**: in the classroom each Submission Requirements cell is one
 description sentence followed by a bulleted list. That structure is preserved
-below with `•` markers. Only line breaks were added — no word was changed,
+below with `•` markers. Only line breaks were added, no word was changed,
 including the spelling `accross` in the memory criterion.
 
 ---

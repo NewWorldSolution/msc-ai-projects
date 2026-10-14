@@ -13,7 +13,7 @@ from agentic.model_budget import ModelCallBudgetExceeded, build_model_call_guard
 
 
 class ScriptedModel(FakeMessagesListChatModel):
-    """Drive the real ReAct loop without provider calls."""
+    """A fake chat model that counts its invocations and never calls a provider."""
 
     invocations: int = 0
 
