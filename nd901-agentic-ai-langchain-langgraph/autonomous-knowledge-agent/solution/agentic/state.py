@@ -5,7 +5,7 @@ from typing import Annotated, Any, Literal, TypedDict
 
 from langchain_core.messages import AnyMessage
 from langgraph.graph.message import add_messages
-
+from langgraph.managed import RemainingSteps
 
 # api: Literal lists allowed values; Pydantic validates them in model schemas.
 IssueCategory = Literal[
@@ -27,8 +27,9 @@ LookupOutcome = Literal[
 class LookupResult(TypedDict, total=False):
     """Controlled tool result; wrappers attach trusted turn/issue provenance.
 
-    TODO: Validate the always-required outcome and mode-specific fields in tools.
-    records contains only scoped facts; an empty completed lookup is not an error.
+    The consuming agents (Response sources, Escalation handoff) validate the outcome and
+    the mode-specific cardinality; records contains only scoped facts, and an empty
+    completed lookup is not an error.
     """
 
     outcome: LookupOutcome
@@ -95,3 +96,4 @@ class CaseState(TypedDict, total=False):
     # Ticket-scoped: survives a new turn; other per-turn controls reset at Intake.
     identity_correction: dict[str, Any]
     persistence_result: dict[str, Any] | None
+    remaining_steps: RemainingSteps

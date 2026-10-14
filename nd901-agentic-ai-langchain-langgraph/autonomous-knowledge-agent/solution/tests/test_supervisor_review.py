@@ -30,7 +30,8 @@ def assessment_result(**changes):
     return dict(draft_id="draft-1", outcome="information_requested", grounded=True,
                 complete=True, correct_outcome=True, appropriate_format=True,
                 grounding_findings=["No unsupported business claim."],
-                completeness_findings=["Requests the missing detail."], revision_reasons=[]) | changes
+                completeness_findings=["Requests the missing detail."], revision_reasons=[],
+                unsupported_sentences=[]) | changes
 
 
 def model_with(*effects):
@@ -193,16 +194,16 @@ def test_missing_identity_first_requests_correction(case, config):
     assert run(case, config, Mock()).goto == "escalation"
 
 
-@pytest.mark.parametrize("error, calls", [(TimeoutError("PRIVATE"), 2), (GraphRecursionError("PRIVATE"), 1),
-                                         (RuntimeError("PRIVATE"), 1)])
-def test_coordination_failure_reaches_safe_persistence(monkeypatch, case, config, error, calls):
-    agent = Mock()
-    agent.invoke.side_effect = error
-    monkeypatch.setattr(supervisor, "build_supervisor_agent", Mock(return_value=agent))
-    result = run(case, config, Mock())
-    assert result.goto == "persist"
-    assert agent.invoke.call_count == calls
-    assert result.update["handoff"]["handoff_source"] == "deterministic_fallback"
+@pytest.mark.parametrize("error", [TimeoutError("PRIVATE"), GraphRecursionError("PRIVATE"), RuntimeError("PRIVATE")])
+def test_classification_dispatch_does_not_build_a_coordination_agent(monkeypatch, case, config, error):
+    builder = Mock(side_effect=error)
+    monkeypatch.setattr(supervisor, "build_supervisor_agent", builder)
+    model = Mock()
+    result = run(case, config, model)
+    assert result.goto == "classifier"
+    assert result.update["assignment"]["agent"] == "classifier"
+    builder.assert_not_called()
+    assert not model.mock_calls
     assert "PRIVATE" not in json.dumps(result.update)
 
 

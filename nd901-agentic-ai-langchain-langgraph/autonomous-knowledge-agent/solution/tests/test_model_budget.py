@@ -129,13 +129,9 @@ def test_duplicate_tool_call_does_not_spend_classifier_budget_again(monkeypatch,
     assert len([message for message in result["messages"] if message.type == "tool"]) == 2
 
 
-@pytest.mark.parametrize("limit, initial, status, classifier_calls, supervisor_calls", [
-    (1, 0, "failed", 0, 1),
-    (2, 0, "completed", 1, 1),
-    (2, 2, "skipped", 0, 0),
-])
-def test_supervisor_exhaustion_returns_unsaved_handoff(monkeypatch, case, assessment,
-        limit, initial, status, classifier_calls, supervisor_calls):
+@pytest.mark.parametrize("limit, initial, dispatch", [(1, 0, True), (2, 0, True), (2, 2, False)])
+def test_supervisor_dispatches_without_spending_calls_or_saves_exhausted_turn(
+        monkeypatch, case, assessment, limit, initial, dispatch):
     case["model_calls"] = initial
     case["approved_response"] = {"body": "old approval"}
     before = deepcopy(case)
@@ -147,20 +143,24 @@ def test_supervisor_exhaustion_returns_unsaved_handoff(monkeypatch, case, assess
     }}}
     original_config = deepcopy(config)
     result = supervisor.supervise_case(case, config, model=model, classifier_model=model)
-    assert result.goto == "persist"
-    assert result.update["outcome"] == "escalated"
     assert result.update["approved_response"] is None
-    assert result.update["messaging_disabled"] is True
-    assert result.update["acknowledgement_permitted"] is False
-    assert result.update["classification_status"] == status
-    assert result.update["handoff"]["handoff_source"] == "deterministic_fallback"
-    assert result.update["handoff"]["message_id"] == "turn-1:handoff"
     assert "messages" not in result.update and "persistence_result" not in result.update
-    assert all(event["event_id"] != "intake" for event in result.update["trace"])
-    assert {**case, **result.update}["model_calls"] == limit
-    assert calls.call_count == classifier_calls
-    assert model.invocations == supervisor_calls
+    assert calls.call_count == 0 and model.invocations == 0
     assert case == before and config == original_config
+    assert {**case, **result.update}["model_calls"] == initial
+    if dispatch:
+        assert result.goto == "classifier"
+        assert result.update["assignment"]["agent"] == "classifier"
+        assert "classification_status" not in result.update
+    else:
+        assert result.goto == "persist"
+        assert result.update["outcome"] == "escalated"
+        assert result.update["messaging_disabled"] is True
+        assert result.update["acknowledgement_permitted"] is False
+        assert result.update["classification_status"] == "skipped"
+        assert result.update["handoff"]["handoff_source"] == "deterministic_fallback"
+        assert result.update["handoff"]["message_id"] == "turn-1:handoff"
+        assert all(event["event_id"] != "intake" for event in result.update["trace"])
     json.dumps(result.update)
 
 

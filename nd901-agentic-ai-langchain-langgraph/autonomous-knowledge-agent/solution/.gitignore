@@ -17,3 +17,10 @@ __pycache__/
 .DS_Store
 
 .pytest_cache/
+
+# Regenerable LangGraph stores: conversation checkpoints and long-term memory.
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+.ruff_cache/

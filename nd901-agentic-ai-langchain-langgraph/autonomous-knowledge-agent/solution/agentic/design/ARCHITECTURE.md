@@ -6,11 +6,11 @@
 
 **Design owner:** Burak Kilic
 
-**Updated:** 2026-09-09
+**Updated:** 2026-10-13
 
-**Status:** submission design agreed; L1 scaffold interfaces aligned to Part A.
-Node, tool and factory bodies remain placeholders; this document does not claim
-completed implementation or passing end-to-end tests. Part A specifies the version to build. Part B records
+**Status:** submission design agreed and implemented. Node, tool and agent bodies are
+implemented with a passing local test suite; twelve scenario tests in `test_workflow.py`
+and `test_tools.py` remain L1 placeholders. Part A specifies the version built. Part B records
 future work and is explicitly outside the submission implementation target.
 
 # Part A — Submission design
@@ -27,10 +27,15 @@ users, tickets, metadata, messages and knowledge articles. Support records, logs
 checkpoints and approved customer memory can be written. No payment ledger, refund
 execution, cancellation execution or other business write is included.
 
-The local demonstration uses existing trusted ticket fixtures and chat. Response
-can format an email subject/body when assigned an email ticket, but there is no
-email sender, receipt system or live channel integration. An email-format unit
-check does not imply email delivery.
+The notebook demonstration processes pending customer messages from open
+database tickets one at a time through `utils.batch_interface`. The stored
+message ID identifies the turn; the ticket ID identifies its checkpoint thread.
+Notebook 02 seeds additional email tickets with explicit increasing timestamps,
+including a same-ticket clarification/follow-up example. The original starter
+ticket retains its supplied channel. Response formats email subject/body for
+email tickets; the notebook displays saved approved wording without sending it.
+There is no email sender, receipt system or live channel integration.
+The manual `chat_interface` remains available for optional experimentation.
 
 | Outcome | Meaning |
 |---|---|
@@ -66,8 +71,9 @@ explicitly, with the same readable node-function style.
 
 Intake prepares the case and Persist saves the outcome. They are ordinary code,
 not agents. Supervisor routing, counters and terminal guards are deterministic.
-Its only model call is draft review, including the already bounded technical
-retry/repair of that review. Classifier and Knowledge supply the semantic
+Its model calls are draft review, including the already bounded technical
+retry/repair of that review, and one lookup-planning call before an Operations
+assignment. Classifier and Knowledge supply the semantic
 assessments that routing consumes. A failed review-model call cannot prevent
 escalation.
 
@@ -218,9 +224,20 @@ retries, choose the outcome, and review customer drafts. It does not query data,
 select individual specialist tools, or write customer wording.
 
 **Model use:** apply the routing table, retry counters and stopping rules in code.
-Call the model only through `review_response` when a draft needs review; that
+Call the model through `review_response` when a draft needs review, and through
+`plan_operations_lookups` before an Operations assignment; the review
 helper returns structured findings and never chooses the destination or rewrites
-the response. A visit to Supervisor does not itself imply a model call. Log actual
+the response. For an escalation receipt, a validated draft with explicitly empty claim
+and question lists, the code sets grounded and complete as satisfied, because there
+is no claim to ground; the model still judges correct outcome and channel format. For resolved
+answers the review result also carries `unsupported_sentences`, every draft sentence the
+reviewer finds in no article or record. A listed sentence that lies inside a mapped claim is
+judged through that claim's grounding; a listed sentence that no claim covers fails the
+grounding check in code. Clarifications are exempt, because the reviewer listed the
+clarification question itself on a live run.
+A computed list of sentences without a claim was tried earlier and withdrawn because it turned
+the review into a coverage check.
+A visit to Supervisor does not itself imply a model call. Log actual
 calls, including permitted retries, rather than assuming a fixed count per ticket.
 
 **Inputs:** prepared case and current request from Intake, checkpointed conversation;
@@ -229,7 +246,10 @@ current-turn account facts, Operations results and Knowledge evidence; draft,
 review history, handoff, failure results, and correction history.
 
 **Outputs:** `Command` with state updates, next agent, assigned issues and facts
-needed, intended outcome, review reasons, acknowledgement permission and routing log.
+needed, intended outcome, review reasons and acknowledgement permission. Every routing
+decision is recorded as a `routing_decision` trace event carrying the destination, the
+assigned agent, the issue IDs and the fixed task text, alongside the existing events for
+exceptional routes (step limit, budget stop, draft blocker, review, terminal failures).
 Classifier is a Supervisor-assigned destination. After each specialist returns,
 Supervisor chooses the next task or authorizes the final outcome for Persist.
 It does not repeat classification once the current-turn assessment or terminal
@@ -272,6 +292,26 @@ An output failure is distinct from a valid `unknown` or `unsupported` issue.
 One request may contain several issues. “Cancel my subscription” is a subscription
 issue even though the agent cannot execute cancellation. Missing details may be
 available through Operations instead of requiring a question to the customer.
+One issue per distinct request: the same request in two wordings is one issue, a
+stated communication preference is recorded as a preference and never as an issue,
+an out-of-scope request is one `unsupported` issue, and a vague request is one
+`unknown` issue. The wrapper enforces part of this structurally before validation; which
+requests are distinct and whether a vague request is unknown rather than unsupported
+still depend on the model. It removes
+placeholder entries such as "none" from required business facts, collapses issues whose
+task text is identical after normalisation, or contained in the other when one reading is
+unknown or unsupported (two classified requests are never merged; a classified reading is
+kept over an unknown or unsupported one; unknown against unsupported on the same text is
+sent to the one repair call, after which the first reading stands), and drops `unknown` issues
+when a classified issue is present. Asking the model to confirm these cases instead was tried
+and withdrawn: it kept the hedge two times in three and blocked the answer behind a
+clarification. The accepted cost is that a genuine second vague remark beside a clear request
+is not acted on in that turn and must come back as a follow-up.
+Missing information or required facts that name a credential are removed in code and counted.
+A stated preference that is not a quote from the current message, for example one
+copied from recalled memory, is dropped and counted rather than failing the turn.
+The classification event records the failed check of an invalid output, and the one
+repair call receives that check.
 
 Urgency is `normal` or `urgent` with a concrete reason; negative sentiment or channel
 alone does not establish it. Complexity is `simple` for one clear issue and `complex`
@@ -284,7 +324,7 @@ event and include them in generated and deterministic handoffs. If classificatio
 was skipped or failed, record the fields as unavailable with that reason; do not
 invent labels to fill the handoff.
 
-**Success:** identify every issue without inventing facts or making routing decisions.
+**Success:** identify each distinct request without inventing facts, issues or routing decisions.
 **Failure / retry:** retry malformed output once, then return technical classification
 failure. Valid `unknown` returns the needed clarification to Supervisor. Model-call
 errors follow the separate technical rule in 5.3.
@@ -311,6 +351,14 @@ the issues each supports; and coverage per issue: `supported`,
 | Consistency | Conflicting passages within retrieved evidence are flagged. |
 
 Traceability is checked in code. Semantic assessments include excerpts and reasons.
+Each structural contradiction in an assessment raises its own named message, which the
+single repair call receives. Items that ask for a secret value (password, PIN, one-time or
+verification code, security answer, login credentials) are removed from required facts and
+missing information in code, because they can neither be looked up nor asked for; information
+about a credential process, such as the error shown on the reset screen, is kept. When nothing
+else was missing the guidance applies. Facts listed under applicability `applies` are dropped only
+when they match a fact a completed lookup was asked for this turn; otherwise the assessment goes to
+the repair call with a message asking for `missing_facts` or no facts.
 Update timestamps do not prove approval or freshness. No detected conflict is not
 proof that none exists elsewhere. No arbitrary “reliability score” is introduced.
 
@@ -370,7 +418,9 @@ identify which one. Tests follow each tool/mode's possible outcomes.
 **Success:** accurate scoped facts, no invented values, no unnecessary duplicate
 lookups. No business writes, articles, customer messages or outcome decisions.
 **Failure / retry:** retry only a tool-classified transient failure once; otherwise
-return the failure for escalation. Return missing/ambiguous results for Supervisor's
+return the failure. A lookup with no authorised mode is reported as unavailable and the
+Supervisor continues to Knowledge with the completed lookups; other failures lead to
+escalation. Return missing/ambiguous results for Supervisor's
 next-step decision. Do not interpret raw exceptions with the model.
 
 ### 4.5 Response agent
@@ -382,6 +432,12 @@ than rewriting the response.
 
 **Inputs:** channel, intended outcome, issues, request/context, accepted articles,
 verified facts, exact missing details or handoff, and previous draft/review reasons.
+Recalled customer memory reaches Response as type, content and outcome only, with no
+IDs or references and with identical notes collapsed, so nothing in it can be cited as
+evidence. Issues reach Response as facts (ID, category, task, status, coverage, article
+IDs, missing details, required facts) without the Knowledge agent's reasoning sentences,
+which the model otherwise copies into the claim field. A claim that cites an article UUID
+or a lookup tool name is resolved to its catalog key and stored as the key.
 
 **Outputs:** draft body (and subject for email), draft ID, outcome, addressed issue
 IDs, factual claim-to-evidence mapping, clarification-question basis and any blocker.
@@ -390,10 +446,13 @@ A citation is not proof: Supervisor checks the actual claim against its source.
 | Mode | Required content |
 |---|---|
 | `resolved` | Supported answers to every issue and relevant next steps; no claim that a write action occurred. |
-| `information_requested` | Exact missing details requested; case remains open. Questions may follow Classifier/Supervisor instructions, but accompanying business claims need verified evidence. |
-| `escalated` | Accurate acknowledgement of human handoff; no resolution claim or unsupported response-time promise. |
+| `information_requested` | Exact missing details requested; case remains open. Questions may follow Classifier/Supervisor instructions, but accompanying business claims need verified evidence. A claim mapped only to the assignment is procedural wording; its mapping entry is removed and counted while the sentence stays in the draft, rather than failing the draft. |
+| `escalated` | A brief receipt: the request was received and passed to human support and is in progress. No business facts, account status, cause, resolution claim, notification or response-time promise; the claim map and question list are empty. A fixed list of timing and contact phrases (for example "shortly", "as soon as possible", "will be in touch") and the verified account values of the case (blocked status, lookup status and tier) are checked in code across the subject and the body; an offending subject is replaced by the default subject, an offending body sentence is removed and counted, and the draft goes to the one repair call when nothing is left or when the remainder no longer says the request was received and passed on. |
 
-Chat needs a clear body. Email formatting needs subject, greeting, body and closing.
+Chat needs a clear body and has no greeting or closing. Email formatting needs subject,
+greeting, body and closing; when the model leaves the subject, greeting or closing empty,
+the application fills a fixed default and records the filled field names in the draft,
+because framing is boilerplate rather than a business claim. The body is never defaulted.
 Keep internal IDs, raw errors and review information outside customer wording.
 
 **Success:** complete supported wording, appropriate to the outcome and channel,
@@ -401,8 +460,16 @@ returned for approval of the exact current draft before presentation.
 
 **Failure / retry:** one original-stage redraft. A second content rejection escalates
 and permits a separate acknowledgement draft plus one redraft. Two acknowledgement
-rejections preserve the handoff with no reply. Terminal generation/review failure
-also disables messaging and leads to a generated/fallback handoff without a reply.
+rejections preserve the handoff with no reply. A draft that fails a structural check
+(exact claim or question text, source keys, channel framing, receipt rule) gets one
+repair call carrying the fixed check message and the available source keys; a second
+failure is a terminal generation failure. A blocker returned for an escalation receipt
+is invalid output and takes the same repair path, because a receipt needs no evidence.
+A successful repair records the repaired check in the drafted event. Exact-text checks
+compare with straight
+quotes, single spaces and folded case; stored wording is unchanged. Terminal
+generation/review failure also disables messaging and leads to a generated/fallback
+handoff without a reply.
 A missing-evidence blocker is not a completed review and cannot reset retrieval
 allowances. Technical retries are separate from content redrafts. New evidence,
 changed wording, or switching between resolution and clarification does not reset
@@ -479,10 +546,13 @@ not return the whole history, does not mint a new message ID on retry, and adds 
 assistant reply for rejected drafts, failed core writes, or handoff-only outcomes.
 
 Checkpointed assistant messages represent approved conversation output, not proof
-of delivery. Support records and checkpoints remain separate stores. If graph
-checkpointing or local presentation fails, report the failure and stop the demo;
-do not claim delivery or implement a second write/recovery path. Existing
-database-only conversations are not automatically imported; recovery is in Part B.
+of delivery. Support records and checkpoints remain separate stores. A graph
+or checkpoint failure is reported; later messages on that ticket are deferred
+while other tickets continue. An unfinished checkpoint requires operator
+inspection before another invocation. A local presentation error is logged
+and stops the batch. No second write/recovery path or delivery claim is added.
+The batch reads pending incoming messages, not entire historical database
+conversations; checkpoint reconstruction and recovery remain in Part B.
 
 `ticket_messages` is the durable application record, not a second source merged
 into active messages each turn. A generated/rejected draft is not conversation.
@@ -511,7 +581,7 @@ trigger a fresh classification cycle.
 | Customer not found | One corrected-details request; if still unresolved after the next reply, escalate. |
 | Unknown intent or essential customer detail missing | Assign a precise clarification, after considering whether a lookup can obtain the detail. |
 | Unsupported issue | Escalate with supported findings and the remaining issue; do not falsely mark the whole request resolved. |
-| Customer-specific reservation/subscription fact needed | Operations chooses the relevant read-only lookup. |
+| Customer-specific reservation/subscription fact needed | Operations chooses the relevant read-only lookup; it is dispatched only when at least one business fact is named, since a lookup needs a target. A lookup that cannot be planned (no authorised mode) is recorded as unavailable and the case continues to Knowledge with the lookups that completed. A `subscription` issue whose classifier output lists no required business fact receives "Customer's current subscription status and tier" as its fact, so the record is obtained before Knowledge; classifier-listed facts are kept as given. |
 | Generic reservation how-to | Knowledge retrieves guidance without an unnecessary Operations dispatch. |
 | Initial pass contains no relevant article for any pending issue | Escalate immediately. |
 | Initial pass has partial/insufficient guidance | Target only unanswered issues; one further search per issue. |
@@ -535,7 +605,7 @@ escalation rule is introduced.
 | Operation | Allowance and terminal result |
 |---|---|
 | Retryable tool/retrieval/model-call failure | Retry the failed operation once; otherwise return controlled failure. Unknown/non-retryable errors are not automatically retried. |
-| Invalid Classifier or evidence/review assessment | One structured-output repair; continued failure is technical, not unknown intent, empty evidence or approval. |
+| Invalid Classifier, evidence/review assessment or Response draft | One structured-output repair; continued failure is technical, not unknown intent, empty evidence or approval. |
 | Insufficient initial retrieval | One targeted retry per turn/issue, independent of technical retries. |
 | Original response content rejection | Initial draft plus one redraft; then escalation. |
 | Escalation acknowledgement rejection | Its own initial draft plus one redraft; then handoff-only persistence. |
@@ -580,13 +650,13 @@ number. The retrieval score and structured grounding/completeness findings are l
 ### 5.4 Retrieval and practical threshold selection
 
 Use the listed Chroma/LangChain dependencies to retrieve account-scoped articles.
-For the small initial corpus, index each short article with its title/tags/content
-and preserve source ID. Candidate count, embedding model and score convention are
+For the small initial corpus, index each article's content, carrying its title and
+source ID as metadata. Candidate count, embedding model and score convention are
 recorded with the chosen threshold. Rebuild after article changes and verify returned
 excerpts against the source. Semantic assessment must not invent article text.
 
-Use a small labeled query table containing relevant matches, near misses, no-match
-requests and multi-issue questions. Inspect the score distribution, choose a threshold
+Use a small labeled query table containing relevant matches, near misses and no-match
+requests. Inspect the score distribution, choose a threshold
 and candidate count, then check a few new queries that were not used to select them.
 Keep all articles available during these query checks. Report observed matches and
 misses; do not claim a statistically robust estimate from a small example set.
@@ -662,7 +732,9 @@ lookup keys and source references. The classification event contains urgency,
 its reason, and complexity; handoffs contain the same assessed fields. A skipped
 or failed assessment is explicit rather than replaced with invented labels.
 `retrieval_gate` records score, threshold and pass/fail together as specified in 5.4.
-No credentials, private model reasoning or raw sensitive exception dumps are logged.
+No credentials or raw exception text are logged; failure diagnostics name schema fields,
+fixed messages and application values only. The agents' structured assessments and review
+findings are logged by design as the decision record.
 
 After the support transaction commits, Persist returns the approved reply as the
 single new assistant-message delta described in 5.1; the graph checkpoints that
@@ -706,7 +778,7 @@ facts still support processing.
 
 Application setup creates both database engines, models, article retriever,
 checkpointer and long-term store, then passes them to `build_workflow`. Resources
-are not constructed at import time. The L1 factory names the scored article
+are not constructed at import time. The factory names the scored article
 retrieval resource `knowledge_store` and accepts `AgentModels`, `RetrievalSettings`
 and `WorkflowLimits` alongside the engines, checkpointer and long-term store.
 These are runtime dependencies/settings, not checkpointed case state. Paths and
@@ -720,15 +792,15 @@ there are no specialist-to-specialist or specialist-to-Persist edges. Supervisor
 the sole graph predecessor of Persist, which saves and then ends the automated turn.
 Do not add an unconditional outgoing edge from Supervisor that runs another
 specialist alongside its selected route. All Supervisor routing is deterministic;
-only its draft-review helper uses the model. Persist has a fixed edge to END and
+only its draft-review helper and the lookup-planning call use the model. Persist has a fixed edge to END and
 returns `persistence_result`; the application interprets that result.
 Process one turn and one specialist assignment at a time. Tools validate arguments
 and use scoped, parameterized read-only business queries. The tool list includes the shared one-key customer lookup (plain helper
 for Intake, decorated tool for Operations), subscription lookup by customer ID,
 reservation lookup by ID or event details, and experience lookup by ID or descriptive
-details. Section 4.4 defines possible outcomes per mode. Narrow the current customer
-helper to customer-only facts and expose the alternate email key; subscription
-and experience tools remain separate.
+details. Section 4.4 defines possible outcomes per mode. The customer helper returns
+customer-only facts and accepts the alternate email key; subscription
+and experience tools are separate.
 
 Return a confirmed persistence result and an optional current approved response.
 The application must not print `messages[-1]`: a handoff-only turn might otherwise
@@ -738,6 +810,13 @@ graph. The application does not call a conversation-state update after presentat
 If no reply exists, show operational diagnostics only to the operator, not as an
 invented customer reply. A presentation error stops the demo and is reported; it
 does not establish delivery.
+
+The batch skips turns with a saved Persist final-outcome event and rechecks
+ticket status before each queued message. A later message on a closed or failed
+ticket produces an explicit skipped report. The notebook then inspects each
+attempted thread through `get_state` and `get_state_history`, showing conversation,
+tool usage, trace events and stored memory. Per-turn reports retain the memory
+recalled at Intake so the returning-customer example can be checked.
 
 **Verified environment evidence, 2026-09-08:** all 21 pinned distributions in the
 solution requirements matched the project virtual environment, and the inspected
@@ -755,14 +834,14 @@ rules.
 
 | Project concern | Lesson reference | Concrete application |
 |---|---|---|
-| State and partial updates | [Fundamentals L12 state management](<../../../../../exercises/Langchain Agentic AI Fundamentals/L12_state_management_starter.ipynb>) | `CaseState`, `Annotated` reducers and `add_messages`; nodes return only their updates. Stable message IDs preserve the agreed conversation contract. |
-| Explicit graph construction | [Advanced L2 blog pipeline solution](<../../../../../exercises/Advanced Agentic AI Techniques/L2_solution_exercise_01_blog_post_pipeline.ipynb>) | `StateGraph(CaseState)`, `add_node`, `add_edge`, then `compile(checkpointer=..., store=...)` in the factory. All five specialists return to Supervisor. |
-| Supervisor routing | [Burak’s Advanced L1 multi-agent exercise](<../../../../../exercises/Advanced Agentic AI Techniques/L1_starter_exercise_01_multi_agent_design.ipynb>) | Use ordinary conditions and `Command(update=..., goto=...)`. Only Supervisor selects a next node in this project. |
-| Prompts and structured results | [Advanced L4 routing demo](<../../../../../exercises/Advanced Agentic AI Techniques/L4_demo_01_routing.ipynb>) | `ChatPromptTemplate` → `prompt.invoke(inputs)` → `model.with_structured_output(Schema).invoke(prompt_value)` → validated result. Classifier already declares its Pydantic schema; review and other semantic outputs follow their agent contracts. |
-| Specialist tool selection | [LangGraph L3 text-to-SQL solution](<../../../../../exercises/Building Ai Agents with LangGraph/L3_solution_exercise_02_text2sql.ipynb>) | `@tool` exposes permitted lookups and `model.bind_tools(...)` lets Operations request them. Execute validated requests through the selected tool’s `.invoke(..., config=config)` and return actual structured lookup results. |
-| Article retrieval | [LangGraph L4 knowledge-base solution](<../../../../../exercises/Building Ai Agents with LangGraph/L4_solution_exercise_01_kb_agent.ipynb>) | Use Chroma/LangChain documents with source metadata. Extend the lesson’s document-only search with `similarity_search_with_relevance_scores`, then apply the agreed numeric gate and evidence checks. |
-| Conversation persistence | [Advanced L4 persisting-memory demo](<../../../../../exercises/Advanced Agentic AI Techniques/L4_demo_02_persisting_memory.ipynb>) | Use `SqliteSaver` and `configurable.thread_id`; inspect with `get_state` / `get_state_history`. The ticket ID identifies the conversation. |
-| Memory across tickets | [Advanced L4 LangMem demo](<../../../../../exercises/Advanced Agentic AI Techniques/L4_demo_06_langmem.ipynb>) | Apply the demonstrated store/namespace concept through the injected long-term store. This project uses SQLite and account/customer scope; eligible memory writes remain controlled by Persist. |
+| State and partial updates | Fundamentals L12 state management (course exercise, outside this package) | `CaseState`, `Annotated` reducers and `add_messages`; nodes return only their updates. Stable message IDs preserve the agreed conversation contract. |
+| Explicit graph construction | Advanced L2 blog pipeline solution (course exercise, outside this package) | `StateGraph(CaseState)`, `add_node`, `add_edge`, then `compile(checkpointer=..., store=...)` in the factory. All five specialists return to Supervisor. |
+| Supervisor routing | Burak’s Advanced L1 multi-agent exercise (course exercise, outside this package) | Use ordinary conditions and `Command(update=..., goto=...)`. Only Supervisor selects a next node in this project. |
+| Prompts and structured results | Advanced L4 routing demo (course exercise, outside this package) | `ChatPromptTemplate` → `prompt.invoke(inputs)` → `model.with_structured_output(Schema).invoke(prompt_value)` → validated result. Classifier already declares its Pydantic schema; review and other semantic outputs follow their agent contracts. |
+| Specialist tool selection | LangGraph L3 text-to-SQL solution (course exercise, outside this package) | `@tool` exposes permitted lookups and `model.bind_tools(...)` lets Operations request them. Execute validated requests through the selected tool’s `.invoke(..., config=config)` and return actual structured lookup results. |
+| Article retrieval | LangGraph L4 knowledge-base solution (course exercise, outside this package) | Use Chroma/LangChain documents with source metadata. Extend the lesson’s document-only search with `similarity_search_with_relevance_scores`, then apply the agreed numeric gate and evidence checks. |
+| Conversation persistence | Advanced L4 persisting-memory demo (course exercise, outside this package) | Use `SqliteSaver` and `configurable.thread_id`; inspect with `get_state` / `get_state_history`. The ticket ID identifies the conversation. |
+| Memory across tickets | Advanced L4 LangMem demo (course exercise, outside this package) | Apply the demonstrated store/namespace concept through the injected long-term store. This project uses SQLite and account/customer scope; eligible memory writes remain controlled by Persist. |
 
 Agent-internal prompts and tool-call messages remain local to that agent invocation;
 return findings through the declared state fields. They must not enter the shared
@@ -782,7 +861,7 @@ uses explicit LangGraph nodes and specialist-owned tools.
 `utils.get_session(engine)` context manager and mapped support models, as in
 notebook 02. Intake and Persist call these helpers directly. LangChain decorators
 are for model-selectable business tools, not mandatory wrappers for every function.
-After implementing the factory, inspect `get_graph().draw_mermaid()` or
+Notebook 03 prints `get_graph().draw_mermaid()`; inspect it or
 `draw_mermaid_png()` and compare the actual graph with section 3.
 
 ## 6. Eight executable scenario groups
@@ -822,16 +901,16 @@ Burak's stated reasons also include:
 
 This lesson-alignment pass closes the planned documentation review. Further
 architecture changes should follow concrete implementation or test findings.
-Start the vertical slice with state and workflow wiring, Intake/support helpers,
-deterministic Supervisor routes and Persist. Use fixed specialist outputs and a
-fixed draft-review result to test routing without model variability, then replace
-those stubs one at a time. The existing L1 interfaces are scaffolds, not completed
-versions of these steps.
+The build followed this order: state and workflow wiring, Intake/support helpers,
+deterministic Supervisor routes and Persist first, tested with fixed specialist outputs
+and a fixed draft-review result, then the model-backed specialists one at a time. The
+agent, tool and workflow bodies are implemented; twelve scenario placeholders remain
+skipped scaffolds.
 
-Before real-data persistence, add the documented `trace_events` model to the
-support schema. Notebook 02 currently requires at least 14 articles before it
-creates ticket fixtures: add at least ten support articles to the supplied four,
-including blocked-account handling, then rebuild the Knowledge store/index. Keep
+The documented `trace_events` model is part of the support schema. Notebook 02 requires
+at least 14 articles before it creates ticket fixtures; the supplied four were extended
+with ten support articles, including blocked-account handling, and notebook 03 rebuilds
+the Knowledge store on each run. Keep
 that setup guard. Fixture-based routing tests can run before article expansion;
 a real-data demo through that notebook cannot. Use the actual data's scope; do not
 invent payment/refund records or assume stored quota establishes remaining usage
@@ -852,12 +931,12 @@ Selected exact rubric requirements and their design locations:
 | “Long-term memory is used to store resolved issues and customer preferences accross different sessions” | 5.7 and T8. |
 | “All logs are structured and searchable” | `trace_events`, 5.6 and T7. |
 
-No implementation-match, article-expansion or test-pass claim is made until the
-code and demonstrations exist. The [shared state](../state.py),
+The code and saved demonstrations exist; the local test suite and the saved notebook
+outputs are the evidence. The [shared state](../state.py),
 [workflow](../workflow.py), [agentic README](../README.md), agent/tool interfaces
-and planned scenario stubs are aligned at L1. Their function bodies remain
-unimplemented. The existing [chat interface](../../utils.py) still requires the
-explicit approved-response/persistence guard before running the demo.
+and scenario stubs are aligned at L1; the agent and tool bodies are implemented and the
+scenario stubs remain placeholders. The [chat and batch interfaces](../../utils.py)
+apply the approved-response/persistence guard before presenting any wording.
 [Requirements](../../requirements.txt) identify the verified existing-environment
 baseline. Submission rationale here uses the decisions already discussed; it does
 not invent a first-person reflection or require files outside the solution.

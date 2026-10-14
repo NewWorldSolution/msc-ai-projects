@@ -1,53 +1,31 @@
-# README Template
+# Autonomous Knowledge Agent (UDA-Hub)
 
-Below is a template provided for use when building your README file for students.
+Udacity Agentic AI nanodegree, course 3 project. A multi-agent customer support system
+built with LangGraph and LangChain for a fictional subscription service, CultPass.
 
-# Project Title
+The system reads support tickets, classifies them, looks up business facts in a read-only
+database, retrieves knowledge base articles, drafts a reply, reviews it against the
+evidence, and either answers the customer, asks a clarifying question, or hands the case
+to a human with a factual summary. Every decision is logged.
 
-Project description goes here.
+## Where to look
 
-## Getting Started
+- **[`solution/`](solution/)** is the submission. Start with
+  [`solution/README.md`](solution/README.md): what the system does, how to run it, what
+  you will see, how it decides, and its known limitations.
+- [`solution/agentic/design/ARCHITECTURE.md`](solution/agentic/design/ARCHITECTURE.md)
+  is the full design document.
+- `starter/` is the unmodified Udacity starter, kept for reference.
+- `INSTRUCTIONS.md` and `rubric.md` are the project brief and rubric as provided.
 
-Instructions for how to get a copy of the project running on your local machine.
+## Running it
 
-### Dependencies
+From the `solution` folder: install `solution/requirements.txt` with Python 3.13, copy
+`.env.example` to `.env` and fill in the API key and base URL, then run the notebooks
+`01`, `02` and `03` in order. The databases are created by the notebooks and are not part
+of this repository. Details are in `solution/README.md`.
 
-```
-Examples here
-```
+## Tests
 
-### Installation
-
-Step by step explanation of how to get a dev environment running.
-
-List out the steps
-
-```
-Give an example here
-```
-
-## Testing
-
-Explain the steps needed to run any automated tests
-
-### Break Down Tests
-
-Explain what each test does and why
-
-```
-Examples here
-```
-## Project Instructions
-
-This section should contain all the student deliverables for this project.
-
-## Built With
-
-* [Item1](www.item1.com) - Description of item
-* [Item2](www.item2.com) - Description of item
-* [Item3](www.item3.com) - Description of item
-
-Include all items used to build project.
-
-## License
-[License](../LICENSE.md)
+From the `solution` folder: `python -m pytest -q tests`. The suite uses fake models and
+makes no live calls.

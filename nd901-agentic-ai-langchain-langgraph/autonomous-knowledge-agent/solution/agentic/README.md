@@ -1,8 +1,9 @@
-# UDA-Hub application scaffold
+# UDA-Hub application
 
-This is the L1 scaffold for [Part A of the architecture](design/ARCHITECTURE.md).
-Interfaces, schemas, reducers and TODOs are aligned; node/tool/factory bodies still
-raise NotImplementedError. Scenario tests are skipped placeholders, not pass claims.
+This package implements [Part A of the architecture](design/ARCHITECTURE.md): the
+state contract, the six agents, the read-only tools, the workflow factory and the
+persistence helpers, with a passing local test suite. The scenario tests in
+`tests/test_workflow.py` and `tests/test_tools.py` remain skipped placeholders.
 
 ## Workflow and responsibilities
 
@@ -61,17 +62,14 @@ The factory binds models and prepares local tool-call config with trusted resour
 preserving the caller's thread_id. Nodes receive the compiled long-term store by
 its named store parameter. Resource objects do not belong in CaseState.
 
-## Implementation still required
+## Status and running
 
-Fill node/tool/factory bodies and the eight scenario groups using the agreed
-contracts. Implement searchable trace_events and atomic support writes. Expand the
-article set and evaluate retrieval thresholds before a live demonstration.
+Node, tool and factory bodies are implemented; `trace_events` records every routing
+decision, retrieval gate, tool call, review and final outcome. Notebook 02 seeds 14
+articles and seven demo tickets; notebook 03 builds the Knowledge store, compiles the
+graph and processes every open ticket with `utils.batch_interface`, presenting only the
+approved reply or an explicit handoff report after a successful save.
 
-Notebook 03 is a setup template. Its existing chat_interface still needs the
-architecture 5.8 presentation guard: display only the explicit current approved
-response after successful graph completion/persistence, never messages[-1].
-Persist owns the conversation delta; the application performs no second state write.
-
-Configure credentials locally using OPENAI_API_KEY and OPENAI_BASE_URL; explicitly
-map a Vocareum-named key at setup if needed. No model or database is called by
-importing these scaffolds, and the unfinished notebook is not ready to run end to end.
+Configure credentials locally from `.env.example` (OPENAI_API_KEY or VOCAREUM_API_KEY,
+and OPENAI_BASE_URL). Run notebooks 01, 02 and 03 in order from the `solution` folder.
+No model or database is called by importing this package.

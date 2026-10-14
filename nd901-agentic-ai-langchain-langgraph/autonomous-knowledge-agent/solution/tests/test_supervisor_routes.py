@@ -74,6 +74,9 @@ def test_operations_first_dispatch_is_focused_and_not_escalated(
     )
 
     model = make_model()
+    # Classification has returned from its separate graph node.
+    completed(case, assessment, "classifier")
+    case["model_calls"] = 1
     before = deepcopy(case)
 
     result = supervisor.supervise_case(
@@ -94,8 +97,8 @@ def test_operations_first_dispatch_is_focused_and_not_escalated(
 
     planning_model.invoke.assert_called_once()
 
-    # Two Supervisor calls + classification + lookup planning.
-    assert result.update["model_calls"] == 4
+    # One classification call plus the existing lookup-planning call.
+    assert result.update["model_calls"] == 2
 
     assert result.update.get("outcome") != "escalated"
     assert not result.update.get("escalation_reason")
@@ -104,6 +107,7 @@ def test_operations_first_dispatch_is_focused_and_not_escalated(
 
 def test_failed_classifier_clears_declared_approval(monkeypatch, case, config):
     case["approved_response"] = {"body": "old"}
+    case["classification_status"] = "failed"
     monkeypatch.setattr(classifier, "assess_request", Mock(side_effect=RuntimeError("private")))
     model = make_model()
     result = supervisor.supervise_case(case, config, model=model, classifier_model=model)
@@ -112,14 +116,14 @@ def test_failed_classifier_clears_declared_approval(monkeypatch, case, config):
     assert "response_approval" not in result.update
 
 
-def test_incomplete_delegation_clears_declared_review(case, config):
+def test_classifier_assignment_clears_prior_review_without_model_coordination(case, config):
     case["review_result"] = {"outcome": "pass", "draft_id": "old"}
-    model = ScriptedModel(responses=[AIMessage(content="Done")])
+    model = ScriptedModel(responses=[AIMessage(content="Unused")])
     result = supervisor.supervise_case(case, config, model=model, classifier_model=model)
-    assert result.goto == "escalation"
+    assert result.goto == "classifier"
     assert result.update["review_result"] is None
     assert "review_reason" not in result.update
-    assert result.update["messaging_disabled"] is True
+    assert model.invocations == 0
 
 
 @pytest.mark.parametrize("outcome, expected", [
@@ -202,18 +206,18 @@ def test_response_return_does_not_restart_first_dispatch(case, assessment, confi
     assert result.update["review_result"]["error_code"] == "invalid_review_state"
 
 
-def test_step_seven_returns_only_changed_fields_and_new_trace(monkeypatch, case, assessment, config):
+def test_classifier_dispatch_returns_only_changed_fields(monkeypatch, case, assessment, config):
     case["tool_results"] = [{"lookup_key": "previous", "outcome": "found"}]
     before = deepcopy(case)
-    monkeypatch.setattr(classifier, "assess_request", Mock(return_value=assessment))
+    assess = Mock(return_value=assessment)
+    monkeypatch.setattr(classifier, "assess_request", assess)
     model = make_model()
     result = supervisor.supervise_case(case, config, model=model, classifier_model=model)
-    assert result.goto == "knowledge"
-    assert result.update["model_calls"] == 3
-    assert result.update["classification_status"] == "completed"
-    assert [event["event_id"] for event in result.update["trace"]] == ["turn-1:classifier:classification"]
-    assert not {"messages", "tool_results", "ticket_id", "account_context"} & result.update.keys()
-    assert case == before
+    assert result.goto == "classifier"
+    assert result.update["assignment"]["agent"] == "classifier"
+    assert not {"model_calls", "classification_status", "trace", "messages", "tool_results", "ticket_id", "account_context"} & result.update.keys()
+    assess.assert_not_called()
+    assert model.invocations == 0 and case == before
 
 
 def test_step_seven_applies_append_only_deltas_without_message_leakage(monkeypatch, case, assessment, config):
@@ -232,20 +236,23 @@ def test_step_seven_applies_append_only_deltas_without_message_leakage(monkeypat
             "classification": classified["classification"],
             "issues": classified["issues"],
             "trace": [{"event_id": "new-event"}],
-            "tool_results": state["tool_results"] + [new_result],
-            "messages": [AIMessage(content="Private coordination")],
+            "tool_results": [new_result],
         }
 
-    monkeypatch.setattr(supervisor, "classify_ticket", specialist_delta)
     model = make_model()
     graph = StateGraph(CaseState)
     graph.add_node("supervisor", lambda state: supervisor.supervise_case(
         state, config, model=model, classifier_model=model))
+    graph.add_node("classifier", specialist_delta)
     graph.add_node("knowledge", lambda state: {})
     graph.add_edge(START, "supervisor")
+    graph.add_edge("classifier", "supervisor")
     graph.add_edge("knowledge", END)
     result = graph.compile().invoke(case)
     assert result["tool_results"] == [old_result, new_result]
-    assert [event["event_id"] for event in result["trace"]] == ["intake", "new-event"]
+    # why: Routing decisions now add their own event; the append-only check ignores them.
+    assert [event["event_id"] for event in result["trace"]
+            if event.get("event_type") != "routing_decision"] == ["intake", "new-event"]
+    assert any(event.get("event_type") == "routing_decision" for event in result["trace"])
     assert result["messages"] == before["messages"]
     assert case == before
