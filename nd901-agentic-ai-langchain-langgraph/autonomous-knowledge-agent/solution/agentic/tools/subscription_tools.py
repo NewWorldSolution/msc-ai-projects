@@ -58,7 +58,7 @@ def lookup_subscription(
     if isinstance(attempt, int) and not isinstance(attempt, bool) and attempt > 0:
         provenance["attempt"] = attempt
 
-    # api: isinstance(value, str) checks the value's runtime type.
+    # `isinstance(value, str)` checks the value's runtime type.
     if not isinstance(customer_id, str) or not customer_id.strip():
         return {
             **provenance,
@@ -126,9 +126,9 @@ def lookup_subscription(
         }
 
     try:
-        # api: get_session opens a session and guarantees rollback/cleanup on errors.
+        # `get_session` opens a session and guarantees rollback/cleanup on errors.
         with get_session(cultpass_engine) as session:
-            # api: one_or_none returns the sole match or None and rejects multiple rows.
+            # `one_or_none` returns the sole match or None and rejects multiple rows.
             subscription = (
                 session.query(cultpass.Subscription)
                 .filter_by(user_id=customer_id)

@@ -125,7 +125,7 @@ def test_calibration_report_applies_recorded_gate(capsys):
 def test_invalid_recommended_candidate_count(observations, count):
     model = scripted_model()
     model.with_structured_output.return_value.invoke.return_value["candidate_count"] = count
-    # why: Only a positive integer within the supplied article catalog is valid.
+    # Only a positive integer within the supplied article catalog is valid.
     with pytest.raises(ValueError):
         knowledge.recommend_retrieval_threshold(observations, model=model)
     assert model.with_structured_output.return_value.invoke.call_count == 1

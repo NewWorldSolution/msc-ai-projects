@@ -29,13 +29,13 @@ def is_retryable_database_error(error: SQLAlchemyError) -> bool:
     if not isinstance(original, sqlite3.OperationalError):
         return False
 
-    # api: sqlite_errorcode exposes SQLite's numeric result code on real errors.
+    # `sqlite_errorcode` exposes SQLite's numeric result code on real errors.
     code = getattr(original, "sqlite_errorcode", None)
     if isinstance(code, int):
-        # api: & 0xFF extracts the primary code from an extended SQLite code.
+        # & 0xFF extracts the primary code from an extended SQLite code.
         return (code & 0xFF) in (sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED)
 
-    # why: Exact known messages support test doubles without guessing from keywords.
+    # Exact known messages support test doubles without guessing from keywords.
     return str(original).lower() in {
         "database is locked",
         "database is busy",

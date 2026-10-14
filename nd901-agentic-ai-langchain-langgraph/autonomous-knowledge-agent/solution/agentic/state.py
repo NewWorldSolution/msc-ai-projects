@@ -7,7 +7,7 @@ from langchain_core.messages import AnyMessage
 from langgraph.graph.message import add_messages
 from langgraph.managed import RemainingSteps
 
-# api: Literal lists allowed values; Pydantic validates them in model schemas.
+# Literal lists allowed values; Pydantic validates them in model schemas.
 IssueCategory = Literal[
     "account_access",
     "subscription",
@@ -44,7 +44,7 @@ class LookupResult(TypedDict, total=False):
     attempt: int
 
 
-# api: total=False permits partial dictionaries, including a node's state delta.
+# `total=False` permits partial dictionaries, including a node's state delta.
 class CaseState(TypedDict, total=False):
     """One ticket's checkpointed state; nodes return only their changed fields.
 
@@ -53,7 +53,7 @@ class CaseState(TypedDict, total=False):
     Models, database engines and retrieval resources are not checkpointed in state.
     """
 
-    # api: add_messages merges by message ID, so a repeated stable ID is replaced.
+    # `add_messages` merges by message ID, so a repeated stable ID is replaced.
     messages: Annotated[list[AnyMessage], add_messages]
     ticket_id: str
     account_id: str
@@ -70,7 +70,7 @@ class CaseState(TypedDict, total=False):
     issues: list[dict[str, Any]]
     assignment: dict[str, Any] | None
 
-    # api: Annotated[..., add] concatenates list deltas; return new entries only.
+    # Annotated[..., add] concatenates list deltas; return new entries only.
     tool_results: Annotated[list[LookupResult], add]
     trace: Annotated[list[dict[str, Any]], add]
     # Replacement: Knowledge returns the COMPLETE current-turn merged article list.

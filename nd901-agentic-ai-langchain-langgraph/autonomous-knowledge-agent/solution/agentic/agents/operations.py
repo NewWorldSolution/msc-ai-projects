@@ -37,7 +37,7 @@ def _invoke_operations_model(model, messages, config, timeout):
     result and do not start another model call in this Operations invocation.
     The caller must also configure its provider's network timeout.
     """
-    # api: submit returns a Future; result(timeout=...) bounds how long we wait.
+    # `submit` returns a Future; result(timeout=...) bounds how long we wait.
     executor = ThreadPoolExecutor(max_workers=1)
     future = executor.submit(model.invoke, messages, config=config)
     try:
@@ -604,7 +604,7 @@ def handle_operations(
                 selected_tool = tool_by_name[tool_name]
                 arguments = tool_call["args"]
                 lookup_mode = tool_call["lookup_mode"]
-                # api: model_dump includes defaults so omitted and explicit None share a key.
+                # `model_dump` includes defaults so omitted and explicit None share a key.
                 normalized = selected_tool.tool_call_schema.model_validate(arguments, strict=True).model_dump()
                 lookup_key = json.dumps({
                     "tool_name": tool_name, "account_id": account_id,
@@ -648,7 +648,7 @@ def handle_operations(
                         **local_config["configurable"], **provenance, "lookup_mode": lookup_mode,
                     }}
                     try:
-                        # api: invoke executes this decorated tool with trusted runtime configuration.
+                        # `invoke` executes this decorated tool with trusted runtime configuration.
                         candidate = selected_tool.invoke(arguments, config=call_config)
                         if not _valid_lookup_result(candidate, provenance, arguments, lookup_mode, trusted_customer_id):
                             raise ValueError("Invalid tool result.")
@@ -682,7 +682,7 @@ def handle_operations(
                     break
                 if result["outcome"] in {"ambiguous", "missing_input"}:
                     issue_needs_clarification = True
-                # api: ToolMessage links real evidence to the model's matching tool-call ID.
+                # ToolMessage links real evidence to the model's matching tool-call ID.
                 local_messages.append(ToolMessage(
                     content=json.dumps(result, ensure_ascii=False, allow_nan=False),
                     tool_call_id=tool_call["id"], name=tool_name,

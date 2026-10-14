@@ -6,7 +6,6 @@ from unittest.mock import Mock
 
 import pytest
 from langchain_core.exceptions import OutputParserException
-from langgraph.errors import GraphRecursionError
 
 from agentic.agents import supervisor
 from agentic.model_budget import build_model_call_guard
@@ -192,19 +191,6 @@ def test_missing_identity_first_requests_correction(case, config):
     assert result.update["identity_correction"]["asked"] is True
     case["identity_correction"] = {"asked": True}
     assert run(case, config, Mock()).goto == "escalation"
-
-
-@pytest.mark.parametrize("error", [TimeoutError("PRIVATE"), GraphRecursionError("PRIVATE"), RuntimeError("PRIVATE")])
-def test_classification_dispatch_does_not_build_a_coordination_agent(monkeypatch, case, config, error):
-    builder = Mock(side_effect=error)
-    monkeypatch.setattr(supervisor, "build_supervisor_agent", builder)
-    model = Mock()
-    result = run(case, config, model)
-    assert result.goto == "classifier"
-    assert result.update["assignment"]["agent"] == "classifier"
-    builder.assert_not_called()
-    assert not model.mock_calls
-    assert "PRIVATE" not in json.dumps(result.update)
 
 
 def test_step_allowance_stops_deterministic_reentry(case, config):

@@ -155,7 +155,7 @@ def search_knowledge(query: str, config: RunnableConfig) -> dict[str, Any]:
     normalized_query = query.strip()
 
     try:
-        # api: similarity_search_with_relevance_scores returns
+        # `similarity_search_with_relevance_scores` returns
         # (Document, score) pairs, where Chroma relevance is higher-is-better.
         candidates = knowledge_store.similarity_search_with_relevance_scores(
             normalized_query,
@@ -199,7 +199,7 @@ def search_knowledge(query: str, config: RunnableConfig) -> dict[str, Any]:
 
             document, raw_score = candidate
 
-            # why: A low-relevance Chroma candidate can have a negative finite
+            # A low-relevance Chroma candidate can have a negative finite
             # score. Preserve the raw value for gating instead of calling it an error.
             valid_score = (
                 isinstance(raw_score, (int, float))
@@ -236,7 +236,7 @@ def search_knowledge(query: str, config: RunnableConfig) -> dict[str, Any]:
             article_ids.append(article_id)
 
         with get_session(udahub_engine) as session:
-            # api: Column.in_(values) creates a parameterized SQL IN condition.
+            # Column.in_(values) creates a parameterized SQL IN condition.
             source_rows = (
                 session.query(udahub.Knowledge)
                 .filter(
@@ -335,7 +335,7 @@ def search_knowledge(query: str, config: RunnableConfig) -> dict[str, Any]:
             "The knowledge search could not be completed.",
             retryable=retryable,
         )
-    # api: OpenAI APITimeoutError inherits APIConnectionError; neither requires
+    # OpenAI APITimeoutError inherits APIConnectionError; neither requires
     # reading exception text or exposing provider details to classify the failure.
     except (TimeoutError, ConnectionError, APIConnectionError, RateLimitError):
         return technical_failure(

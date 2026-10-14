@@ -35,7 +35,7 @@ def lookup_customer(
         issue, lookup-key and attempt provenance. No relationship is loaded and
         no identity mapping is changed. Non-SQLAlchemy exceptions propagate.
     """
-    # api: isinstance(value, str) checks the value's runtime type.
+    # `isinstance(value, str)` checks the value's runtime type.
     usable_customer_id = isinstance(customer_id, str) and bool(customer_id.strip())
     usable_email = isinstance(email, str) and bool(email.strip())
 
@@ -58,11 +58,11 @@ def lookup_customer(
         }
 
     try:
-        # api: get_session opens a session and guarantees rollback/cleanup on errors.
+        # `get_session` opens a session and guarantees rollback/cleanup on errors.
         with get_session(engine) as session:
             query = session.query(cultpass.User)
 
-            # api: filter_by(...).first() uses bound exact equality and returns one
+            # `filter_by(...).first()` uses bound exact equality and returns one
             # mapped row or None.
             if usable_customer_id:
                 customer = query.filter_by(user_id=customer_id).first()
@@ -78,12 +78,12 @@ def lookup_customer(
                     "retryable": False,
                 }
 
-            # api: model_to_dict returns only the mapped table columns; SQLAlchemy
+            # `model_to_dict` returns only the mapped table columns; SQLAlchemy
             # relationships such as subscription and reservations are excluded.
             customer_record = model_to_dict(customer)
             for field in ("created_at", "updated_at"):
                 value = customer_record[field]
-                # api: isoformat() converts a stored datetime into JSON-safe text.
+                # `isoformat()` converts a stored datetime into JSON-safe text.
                 customer_record[field] = value.isoformat() if value is not None else None
     except SQLAlchemyError as error:
         retryable = is_retryable_database_error(error)
@@ -106,7 +106,7 @@ def lookup_customer(
     }
 
 
-# api: @tool exposes declared arguments; RunnableConfig is supplied by the caller.
+# @tool exposes declared arguments; RunnableConfig is supplied by the caller.
 @tool
 def lookup_customer_tool(
     config: RunnableConfig, *, customer_id: str | None = None, email: str | None = None
@@ -229,5 +229,5 @@ def lookup_customer_tool(
             **provenance,
         }
 
-    # api: {**first, **second} copies mappings; later keys override earlier ones.
+    # `{**first, **second}` copies mappings; later keys override earlier ones.
     return {**result, **provenance}

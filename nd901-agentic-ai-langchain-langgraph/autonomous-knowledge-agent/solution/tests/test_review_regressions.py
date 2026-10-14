@@ -126,7 +126,7 @@ def test_no_customer_required_for_experience_and_foreign_reservation_hidden(busi
 ])
 def test_customer_switch_rejected_without_database_query(business_engine, tool, args):
     statements = []
-    # api: before_cursor_execute observes SQL actually sent to the database.
+    # `before_cursor_execute` observes SQL actually sent to the database.
     event.listen(business_engine, "before_cursor_execute",
                  lambda *args: statements.append(args[2]))
     result = tool.invoke(args, config=config(business_engine))

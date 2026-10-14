@@ -73,7 +73,7 @@ def validate_workflow_limits(limits: WorkflowLimits) -> WorkflowLimits:
     except OverflowError:
         raise ValueError("call_timeout_seconds is too large") from None
 
-    # api: isfinite rejects infinity and NaN.
+    # `isfinite` rejects infinity and NaN.
     if not isfinite(timeout) or timeout <= 0:
         raise ValueError(
             "call_timeout_seconds must be a positive finite number"
@@ -273,12 +273,12 @@ def build_workflow(
         }
 
 
-    # 4. BIND THE GRAPH NODES TO TRUSTED RESOURCES AND MODELS.
+    # 4. Bind the graph nodes to trusted resources and models.
     def intake_node(
         state: CaseState, config: RunnableConfig, *, store: BaseStore
     ) -> CaseState:
         """Prepare the case using trusted engines and the injected memory store."""
-        # api: LangGraph injects the compiled store into the named store parameter.
+        # LangGraph injects the compiled store into the named store parameter.
         return prepare_case(state, build_node_config(config), store=store)
 
     def supervisor_node(
@@ -312,8 +312,8 @@ def build_workflow(
                 "The graph must retain enough steps for Supervisor and Persist."
             )
 
-        # why: Another specialist assignment needs four steps:
-        # this Supervisor, specialist, returning Supervisor, then Persist.
+        # Another specialist assignment needs four steps:
+        # This Supervisor, specialist, returning Supervisor, then Persist.
         if remaining <= 3:
             update: CaseState = {
                 "outcome": "escalated",
@@ -357,7 +357,7 @@ def build_workflow(
     def classifier_node(state: CaseState, config: RunnableConfig) -> CaseState:
         """Classify an assigned case and return its shared model-call count."""
         node_config = build_node_config(config)
-        # why: Reservations change this copy, never the graph's input state.
+        # Reservations change this copy, never the graph's input state.
         working_case = deepcopy(state)
         reserve_model_call = build_model_call_guard(
             working_case,
@@ -405,7 +405,7 @@ def build_workflow(
         )
 
     # Create the graph and register its node
-    #api: StateGraph defines a workflow using CaseState and its reducers.
+    # StateGraph defines a workflow using CaseState and its reducers.
 
     graph= StateGraph(CaseState)
 

@@ -215,7 +215,10 @@ def test_classifier_dispatch_returns_only_changed_fields(monkeypatch, case, asse
     result = supervisor.supervise_case(case, config, model=model, classifier_model=model)
     assert result.goto == "classifier"
     assert result.update["assignment"]["agent"] == "classifier"
-    assert not {"model_calls", "classification_status", "trace", "messages", "tool_results", "ticket_id", "account_context"} & result.update.keys()
+    assert not {"model_calls", "classification_status", "messages", "tool_results", "ticket_id", "account_context"} & result.update.keys()
+    # The dispatch is a routing decision, so it is the only trace entry the Supervisor adds here.
+    assert [event["event_type"] for event in result.update["trace"]] == ["routing_decision"]
+    assert result.update["trace"][0]["payload"]["destination"] == "classifier"
     assess.assert_not_called()
     assert model.invocations == 0 and case == before
 
@@ -250,7 +253,7 @@ def test_step_seven_applies_append_only_deltas_without_message_leakage(monkeypat
     graph.add_edge("knowledge", END)
     result = graph.compile().invoke(case)
     assert result["tool_results"] == [old_result, new_result]
-    # why: Routing decisions now add their own event; the append-only check ignores them.
+    # Routing decisions now add their own event; the append-only check ignores them.
     assert [event["event_id"] for event in result["trace"]
             if event.get("event_type") != "routing_decision"] == ["intake", "new-event"]
     assert any(event.get("event_type") == "routing_decision" for event in result["trace"])

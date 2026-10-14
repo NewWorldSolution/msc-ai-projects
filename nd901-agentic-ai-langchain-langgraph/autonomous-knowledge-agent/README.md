@@ -6,7 +6,8 @@ built with LangGraph and LangChain for a fictional subscription service, CultPas
 The system reads support tickets, classifies them, looks up business facts in a read-only
 database, retrieves knowledge base articles, drafts a reply, reviews it against the
 evidence, and either answers the customer, asks a clarifying question, or hands the case
-to a human with a factual summary. Every decision is logged.
+to a human with a factual summary. Every routing decision is logged, and each result in
+the demonstration prints the route the message took through the agents.
 
 ## Where to look
 
@@ -16,11 +17,12 @@ to a human with a factual summary. Every decision is logged.
 - [`solution/agentic/design/ARCHITECTURE.md`](solution/agentic/design/ARCHITECTURE.md)
   is the full design document.
 - `starter/` is the unmodified Udacity starter, kept for reference.
-- `INSTRUCTIONS.md` and `rubric.md` are the project brief and rubric as provided.
+- `INSTRUCTIONS.md` holds Udacity's project brief (Part 1, verbatim) and my own work
+  breakdown (Part 2). `rubric.md` is the rubric as captured from the classroom.
 
 ## Running it
 
-From the `solution` folder: install `solution/requirements.txt` with Python 3.13, copy
+From the `solution` folder: install `requirements.txt` with Python 3.13, copy
 `.env.example` to `.env` and fill in the API key and base URL, then run the notebooks
 `01`, `02` and `03` in order. The databases are created by the notebooks and are not part
 of this repository. Details are in `solution/README.md`.

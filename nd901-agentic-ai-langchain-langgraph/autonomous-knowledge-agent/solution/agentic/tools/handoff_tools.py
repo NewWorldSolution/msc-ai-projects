@@ -59,7 +59,7 @@ def assemble_fallback_handoff(state: CaseState) -> dict[str, Any]:
         if isinstance(issue.get("issue_id"), str) and issue["issue_id"].strip()
     ]
     if not issue_ids:
-        # why: A failed/skipped classifier can leave no issue object. The synthetic
+        # A failed/skipped classifier can leave no issue object. The synthetic
         # ID labels that unclassified work without inventing its category or facts.
         issue_ids = [f"{turn_id}:unclassified"]
 
@@ -174,7 +174,7 @@ def assemble_fallback_handoff(state: CaseState) -> dict[str, Any]:
             ),
         }
 
-    # why: This payload deliberately excludes response_draft and review history;
+    # This payload deliberately excludes response_draft and review history;
     # rejected customer wording is not evidence for a human support decision.
     return {
         "message_id": f"{turn_id}:handoff",

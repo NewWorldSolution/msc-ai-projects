@@ -25,7 +25,7 @@ def test_review_receives_historical_memory(review_case):
     review_case["customer_memory"] = [{"content": "Please keep replies concise."}]
     model = model_with(assessment_result())
     supervisor.review_response(review_case, model=model, reserve_model_call=Mock())
-    # api: call_args.args exposes the mock's latest positional arguments.
+    # `call_args.args` exposes the mock's latest positional arguments.
     prompt = model.with_structured_output.return_value.invoke.call_args.args[0]
     context = json.loads(prompt.messages[-1].content.split("\n", 1)[1])
     assert context["historical_customer_memory"] == review_case["customer_memory"]

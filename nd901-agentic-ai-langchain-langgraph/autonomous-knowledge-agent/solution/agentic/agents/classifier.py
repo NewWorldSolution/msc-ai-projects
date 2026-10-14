@@ -27,20 +27,20 @@ class ClassificationCheckError(OutputParserException):
 def _classification_detail(exc: Exception) -> str:
     """Name the failed check without copying model output into the trace."""
     if isinstance(exc, ValidationError):
-        # why: Extra keys and missing_information_reasons keys in the location were chosen by the model.
+        # Extra keys and missing_information_reasons keys in the location were chosen by the model.
         return schema_mismatch_detail(exc, TicketClassification)
     if isinstance(exc, ClassificationCheckError):
         return str(exc).splitlines()[0]
-    # why: A parser exception from the library may quote model output, so only its kind is kept.
+    # A parser exception from the library may quote model output, so only its kind is kept.
     return "Structured output could not be parsed."
 
 
 class IssueAssessment(BaseModel):
     """One model-described issue; the wrapper attaches its stable issue ID."""
 
-    # api: ConfigDict(extra="forbid") rejects fields outside the declared schema.
+    # ConfigDict(extra="forbid") rejects fields outside the declared schema.
     model_config = ConfigDict(extra="forbid")
-    # why: Schema descriptions reach the model with the tool definition; the prose rule alone was ignored.
+    # Schema descriptions reach the model with the tool definition; the prose rule alone was ignored.
     category: IssueCategory = Field(description=(
         "unknown: the customer has not said what they need, or the intent cannot be understood yet. "
         "unsupported: a specific, understood request that is outside support scope. "
@@ -57,7 +57,7 @@ class TicketClassification(BaseModel):
     """Structured assessment returned to Supervisor, without invented account facts."""
 
     model_config = ConfigDict(extra="forbid")
-    # api: min_length on a list field requires at least this many items.
+    # `min_length` on a list field requires at least this many items.
     issues: list[IssueAssessment] = Field(min_length=1)
     urgency: Urgency
     urgency_reason: str
@@ -132,14 +132,14 @@ def assess_request(message: str, context: str, *, model:BaseChatModel) -> Ticket
         ),
     ])
 
-    # api: invoke fills the placeholders and returns a chat prompt value.
+    # `invoke` fills the placeholders and returns a chat prompt value.
     prompt_value = prompt.invoke({
         "message": message,
         "context": context,
     })
 
-    # api: with_structured_output parses the response using this Pydantic schema.
-    # api: method="function_calling" sends the schema as a tool definition; OpenAI's
+    # `with_structured_output` parses the response using this Pydantic schema.
+    # `method="function_calling"` sends the schema as a tool definition; OpenAI's
     # default strict mode rejects the free-form dict in missing_information_reasons.
     structured_model = model.with_structured_output(
         TicketClassification, method="function_calling"
@@ -158,10 +158,10 @@ def _assess_with_timeout(request, context, *, model, timeout):
     if timeout is None:
         return assess_request(request, context, model=model)
     executor = ThreadPoolExecutor(max_workers=1)
-    # api: submit runs one callable in a worker and returns a Future.
+    # `submit` runs one callable in a worker and returns a Future.
     future = executor.submit(assess_request, request, context, model=model)
     try:
-        # api: result(timeout=...) bounds this wait; it cannot cancel a running call.
+        # `result(timeout=...)` bounds this wait; it cannot cancel a running call.
         return future.result(timeout=timeout)
     except TimeoutError:
         if future.done() and isinstance(future.exception(), TimeoutError):
@@ -170,7 +170,7 @@ def _assess_with_timeout(request, context, *, model, timeout):
         future.cancel()
         raise ClassificationCallTimeout("Classification wait expired.") from None
     finally:
-        # why: Waiting here would undo the deadline; provider timeouts must also be configured.
+        # Waiting here would undo the deadline; provider timeouts must also be configured.
         executor.shutdown(wait=False, cancel_futures=True)
 
 def classify_ticket(
@@ -253,7 +253,7 @@ def classify_ticket(
             break
         call_context = context
         if attempts.get(repair_key, 0):
-            # why: The failed check is this module's fixed message, never model text.
+            # The failed check is this module's fixed message, never model text.
             call_context += (
                 "\nValidation feedback: the previous assessment was invalid. "
                 f"Failed check: {failure_detail} "
@@ -261,16 +261,16 @@ def classify_ticket(
                 "and a non-empty reason for each missing-information item."
             )
         try:
-            # why: Denied calls consume neither a model call nor a classifier attempt.
+            # Denied calls consume neither a model call nor a classifier attempt.
             reserve_model_call()
             attempts[call_key] = attempts.get(call_key, 0) + 1
             candidate = _assess_with_timeout(
                 current.content, call_context, model=model, timeout=call_timeout_seconds,
             )
-            # api: model_validate validates plain data using the existing schema.
+            # `model_validate` validates plain data using the existing schema.
             candidate = TicketClassification.model_validate(candidate)
-            # why: Decision 2026-10-12: a quote copied from memory or history is not a current
-            #   statement. It is dropped and counted, instead of failing the whole turn.
+            # A quote copied from memory or history is not a current
+            # statement. It is dropped and counted, instead of failing the whole turn.
             kept_preferences = [
                 preference for preference in candidate.stated_preferences
                 if preference.strip() and normalize_text(preference) in normalize_text(current.content)
@@ -278,14 +278,14 @@ def classify_ticket(
             dropped_preferences = len(candidate.stated_preferences) - len(kept_preferences)
             candidate.stated_preferences = kept_preferences
             for issue in candidate.issues:
-                # why: Decision 2026-10-12: "none" is not a business fact and must not send a case to Operations.
+                # "none" is not a business fact and must not send a case to Operations.
                 issue.required_business_facts = [
                     fact for fact in issue.required_business_facts
                     if fact.strip().casefold() not in {"none", "n/a"}
                 ]
             for issue in candidate.issues:
-                # why: Decision 2026-10-12: never ask the customer for a credential and never list
-                #   one as a business fact; the prompt rule alone did not hold.
+                # Never ask the customer for a credential and never list
+                # one as a business fact; the prompt rule alone did not hold.
                 credential_items = [item for item in issue.missing_information + issue.required_business_facts
                                     if mentions_credential(item)]
                 dropped_credential_requests += len(credential_items)
@@ -293,39 +293,39 @@ def classify_ticket(
                 issue.missing_information_reasons = {k: v for k, v in issue.missing_information_reasons.items()
                                                      if k in issue.missing_information}
                 issue.required_business_facts = [f for f in issue.required_business_facts if not mentions_credential(f)]
-            # why: Decision 2026-10-12: the prompt merge rule was ignored on every live run,
-            #   so duplicates and hedging are removed structurally. Same task text twice is
-            #   one issue; an unknown issue beside a classified one is hedging, not a request.
+            # The prompt asks the model to merge duplicates, and it never does,
+            # so duplicates and hedging are removed here instead. Same task text twice is
+            # one issue; an unknown issue beside a classified one is hedging, not a request.
             hedging = {"unknown", "unsupported"}
 
             def same_text(first: IssueAssessment, second: IssueAssessment) -> bool:
                 return normalize_text(first.task) == normalize_text(second.task)
 
             def contained(first: IssueAssessment, second: IssueAssessment) -> bool:
-                # why: "reset password" inside "how to reset password" with one hedging side is a
-                #   likely duplicate, but only likely; the model confirms it in one repair call.
+                # "reset password" inside "how to reset password" with one hedging side is
+                # the same request said twice, so the two are merged.
                 a, b = normalize_text(first.task), normalize_text(second.task)
                 shorter, longer = min(a, b, key=len), max(a, b, key=len)
                 return (a != b and len(shorter) >= 8 and shorter in longer
                         and (first.category in hedging or second.category in hedging))
 
-            # why: Decision 2026-10-14 (revised the same day): asking the model to confirm a suspected
-            #   hedge kept it two times in three on a live run, which blocked the real answer behind
-            #   a clarification. The deterministic rule produced the fully correct runs, so it stands:
-            #   a contained task with a hedging side is one request, and an unknown issue beside a
-            #   classified one is hedging. The cost, a lost second vague remark, is documented.
+            # I tried letting the model confirm a suspected hedge instead of deciding here, and it
+            # kept the hedge two times out of three, which blocked the real answer behind a
+            # clarification. So the fixed rule stands: a contained task with a hedging side is one
+            # request, and an unknown issue beside a classified one is hedging. The cost, a lost
+            # second vague remark, is noted in the README.
             kept = []
             for issue in candidate.issues:
                 match = next((k for k in kept if same_text(k, issue) or contained(k, issue)), None)
                 if match is None:
                     kept.append(issue)
                 elif issue.category not in hedging and match.category in hedging:
-                    # why: A classified reading of the same request beats an unknown or unsupported one.
+                    # A classified reading of the same request beats an unknown or unsupported one.
                     kept[kept.index(match)] = issue
                 elif ({issue.category, match.category} == hedging and same_text(match, issue)
                       and attempts.get(repair_key, 0) < 1):
-                    # why: Decision 2026-10-12: the model, not output order, decides between unknown
-                    #   and unsupported; one repair asks for a single reading, then the first stands.
+                    # The model, not output order, decides between unknown
+                    # and unsupported; one repair asks for a single reading, then the first stands.
                     raise ClassificationCheckError(
                         "The same request is labelled both unknown and unsupported; "
                         "return one issue with one category."
@@ -347,7 +347,7 @@ def classify_ticket(
             assessment = candidate
             break
         except ClassificationCallTimeout:
-            # why: An outstanding call cannot safely be retried or followed by another model call.
+            # An outstanding call cannot safely be retried or followed by another model call.
             error_code = "classification_call_timeout"
             break
         except ModelCallBudgetExceeded:
@@ -376,7 +376,7 @@ def classify_ticket(
             )
 
     if assessment is not None:
-        # api: enumerate(..., start=1) supplies a stable position for each issue.
+        # Enumerate(..., start=1) supplies a stable position for each issue.
         for index, issue in enumerate(assessment.issues, start=1):
             issues.append({
                 **issue.model_dump(),

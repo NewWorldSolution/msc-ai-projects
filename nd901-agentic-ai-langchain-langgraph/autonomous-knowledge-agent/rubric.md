@@ -1,18 +1,11 @@
 # Rubric — nd901 · Course 3 · Project: Autonomous Knowledge Agent
 
-> **PASTED VERBATIM. DO NOT PARAPHRASE, SUMMARISE, OR REWORD.**
-> AGENTS.md §7.1 — the rubric-reviewer quotes these criteria exactly. Reviewers
-> reject against this wording, so the wording is the asset.
-
 **Source**: classroom → nd901 → *Course 3: Advanced Agentic AI Techniques* → **Project: Autonomous Knowledge Agent** → Rubric tab
 **Captured**: 2026-09-07 — pasted as text, then verified against screenshots of the
 rubric tab criterion by criterion. Not OCR'd.
-**Status**: classroom shows "Overdue"; Burak has said to disregard it. Course 3 was 42 % complete at last check.
 
 Implementation instructions: [`INSTRUCTIONS.md`](./INSTRUCTIONS.md).
 Starter scaffold: [`starter/`](./starter/). Submission goes in `solution/`.
-The other two nd901 projects have their own folders under `../` — never review
-against a sibling's rubric.
 
 > The classroom calls this project **"Autonomous Knowledge Agent"**; the scenario
 > and the scaffold call the product **"UDA-Hub"** (a Universal Decision Agent),

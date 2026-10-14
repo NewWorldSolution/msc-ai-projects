@@ -49,6 +49,35 @@ def model_to_dict(instance):
         for column in instance.__table__.columns
     }
 
+
+def routing_path(trace_events: list[dict], *, channel: str | None = None,
+                 outcome: str | None = None, reply_present: bool = False) -> str:
+    """Describe one turn's route through the agents as readable text.
+
+    Built only from the Supervisor's routing_decision trace events, in the order they
+    were written, so the line is evidence from the log rather than a description of the
+    design. The customer message arrives through the channel, Intake prepares it and every
+    specialist returns to Supervisor until Persist saves the turn.
+    """
+    steps = [channel or "message", "intake", "supervisor"]
+    for event in trace_events:
+        if not isinstance(event, dict) or event.get("event_type") != "routing_decision":
+            continue
+        destination = (event.get("payload") or {}).get("destination")
+        if not destination:
+            continue
+        steps.append(destination)
+        if destination != "persist":
+            steps.append("supervisor")
+    if steps[-1] == "persist":
+        if outcome == "escalated":
+            steps.append("human support" + (" + customer (receipt)" if reply_present else " (no customer reply)"))
+        else:
+            steps.append({"resolved": "customer (answer)",
+                          "information_requested": "customer (question)"}.get(outcome, "end"))
+    return " -> ".join(steps)
+
+
 def chat_interface(agent: CompiledStateGraph, ticket_id: str):
     """Run chat turns and present only a saved, current-turn approved response.
 
@@ -57,7 +86,7 @@ def chat_interface(agent: CompiledStateGraph, ticket_id: str):
     operator diagnostic. Persist owns conversation updates. Presentation events
     are logged without message text or raw provider exceptions.
     """
-    # api: getLogger creates a named logger using the application's logging setup.
+    # GetLogger creates a named logger using the application's logging setup.
     logger = logging.getLogger(__name__)
     while True:
         user_input = input("User: ")
@@ -66,7 +95,7 @@ def chat_interface(agent: CompiledStateGraph, ticket_id: str):
             print("Assistant: Goodbye!")
             break
 
-        # api: uuid4 creates a unique ID retained for this turn's graph invocation.
+        # Uuid4 creates a unique ID retained for this turn's graph invocation.
         turn_id = str(uuid4())
         trigger = {"messages": [HumanMessage(content=user_input, id=turn_id)]}
         config = {"configurable": {"thread_id": ticket_id}}
@@ -100,7 +129,7 @@ def chat_interface(agent: CompiledStateGraph, ticket_id: str):
             logger.error("invalid_approved_response ticket=%s turn=%s; no reply presented", ticket_id, turn_id)
             break
 
-        # why: A conversation's last message is not proof of approval or saving.
+        # A conversation's last message is not proof of approval or saving.
         try:
             print("Assistant:", approved["content"])
         except OSError:
@@ -166,6 +195,10 @@ def batch_interface(
         try:
             print(f"\nTicket: {report['ticket_id']}")
             print("Outcome:", report.get("outcome", report["status"]))
+            if report.get("trace") is not None:
+                print("Routing:", routing_path(report["trace"], channel=report.get("channel"),
+                                               outcome=report.get("outcome"),
+                                               reply_present=report["reply"] is not None))
             if report["reply"] is not None:
                 print(report["reply"])
                 logger.info("presentation_succeeded ticket=%s turn=%s",
@@ -217,7 +250,7 @@ def batch_interface(
             continue
         config = {"configurable": {"thread_id": ticket_id}}
         try:
-            # api: get_state reads the thread's saved values and any unfinished nodes.
+            # `get_state` reads the thread's saved values and any unfinished nodes.
             snapshot = orchestrator.get_state(config)
         except Exception as exc:
             report["error_code"] = "checkpoint_read_failed"
@@ -233,7 +266,7 @@ def batch_interface(
             display(report)
             continue
         try:
-            # api: invoke runs the connected graph with the stored customer message.
+            # `invoke` runs the connected graph with the stored customer message.
             result = orchestrator.invoke(
                 input={"messages": [HumanMessage(content=content, id=turn_id)]},
                 config=config,

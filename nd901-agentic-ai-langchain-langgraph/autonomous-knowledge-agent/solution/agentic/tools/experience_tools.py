@@ -33,7 +33,7 @@ def _experience_record(
         must contain a datetime.
     """
 
-    # api: datetime.isoformat() converts a datetime into a stable text value.
+    # `datetime.isoformat()` converts a datetime into a stable text value.
     return {
         "experience_id": experience.experience_id,
         "title": experience.title,
@@ -141,7 +141,7 @@ def lookup_experiences(
             }
 
         try:
-            # api: date.fromisoformat validates and parses a YYYY-MM-DD value.
+            # `date.fromisoformat` validates and parses a YYYY-MM-DD value.
             parsed_event_date = date.fromisoformat(event_date)
             if parsed_event_date.isoformat() != event_date or parsed_event_date == date.max:
                 raise ValueError("Event date must be a supported YYYY-MM-DD date.")
@@ -174,7 +174,7 @@ def lookup_experiences(
             "retryable": False,
         }
 
-    # why: ID lookup and descriptive search are separate modes. Combining them
+    # ID lookup and descriptive search are separate modes. Combining them
     # could silently hide conflicting caller inputs.
     if usable_experience_id and descriptive_search:
         return {
@@ -244,10 +244,10 @@ def lookup_experiences(
         }
 
     try:
-        # api: get_session guarantees rollback and cleanup if querying fails.
+        # `get_session` guarantees rollback and cleanup if querying fails.
         with get_session(cultpass_engine) as session:
             if usable_experience_id:
-                # api: Session.get loads one row by its primary key or returns None.
+                # Session.get loads one row by its primary key or returns None.
                 experience = session.get(
                     cultpass.Experience,
                     experience_id,
@@ -259,7 +259,7 @@ def lookup_experiences(
                 query = session.query(cultpass.Experience)
 
                 if usable_title:
-                    # api: SQLAlchemy comparison expressions use bound parameters.
+                    # SQLAlchemy comparison expressions use bound parameters.
                     query = query.filter(
                         cultpass.Experience.title == title
                     )
@@ -270,7 +270,7 @@ def lookup_experiences(
                     )
 
                 if parsed_event_date is not None:
-                    # why: `when` is a datetime, so one calendar date is represented
+                    # `when` is a datetime, so one calendar date is represented
                     # by a half-open range: start inclusive, next day exclusive.
                     day_start = datetime.combine(
                         parsed_event_date,
@@ -283,7 +283,7 @@ def lookup_experiences(
                         cultpass.Experience.when < day_end,
                     )
 
-                # api: order_by(...).all() returns every match in stable order.
+                # `order_by(...).all()` returns every match in stable order.
                 experiences = (
                     query.order_by(
                         cultpass.Experience.when,
@@ -292,7 +292,7 @@ def lookup_experiences(
                     .all()
                 )
 
-            # why: Convert rows while the session is open; no lazy relationship
+            # Convert rows while the session is open; no lazy relationship
             # loading is needed after the database session closes.
             records = [
                 _experience_record(experience)

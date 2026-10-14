@@ -40,9 +40,9 @@ def search_customer_memory(
         raise ValueError("Customer-memory recall requires a non-empty customer ID.")
 
     namespace = (_MEMORY_NAMESPACE, account_id, customer_id)
-    # api: store.search returns records whose namespace starts with this tuple.
+    # `store.search` returns records whose namespace starts with this tuple.
     items = store.search(namespace, limit=100)
-    # why: The stable store key is returned with each value so callers retain
+    # The stable store key is returned with each value so callers retain
     # provenance and can distinguish otherwise similar historical memories.
     return [
         {**item.value, "memory_id": item.key}
@@ -169,7 +169,7 @@ def save_customer_memory(
         "outcome": outcome,
     }
     try:
-        # api: store.get returns the item at one exact namespace/key or None.
+        # `store.get` returns the item at one exact namespace/key or None.
         existing = store.get(namespace, memory_id)
         if existing is not None and existing.value != stored_memory:
             return {
@@ -180,10 +180,10 @@ def save_customer_memory(
                 "reason": "The stable memory ID already refers to different content.",
             }
         if existing is None:
-            # api: store.put writes one dictionary under a namespace and stable key.
+            # `store.put` writes one dictionary under a namespace and stable key.
             store.put(namespace, memory_id, stored_memory)
     except Exception:
-        # why: Store implementations can expose different backend exceptions. This
+        # Store implementations can expose different backend exceptions. This
         # auxiliary boundary reports a controlled failure without masking core save.
         return {
             "saved": False,

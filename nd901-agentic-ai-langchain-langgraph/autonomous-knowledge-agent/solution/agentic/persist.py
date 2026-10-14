@@ -26,7 +26,7 @@ def _trace_delta(
         for event in state.get("trace", [])
         if isinstance(event, dict)
     }
-    # why: The trace reducer concatenates rather than merging by ID, so a repeated
+    # The trace reducer concatenates rather than merging by ID, so a repeated
     # node invocation must not append the same checkpoint event a second time.
     return [event for event in events if event.get("event_id") not in existing_ids]
 
@@ -75,7 +75,7 @@ def _failure_update(
 def _current_customer_content(state: CaseState, turn_id: str) -> str | None:
     """Find the current text-only human message by its stable turn ID."""
 
-    # why: Conversation history can contain older human turns and approved replies;
+    # Conversation history can contain older human turns and approved replies;
     # persistence must save the human message that owns this turn, not messages[-1].
     for message in reversed(state.get("messages", [])):
         if getattr(message, "type", None) != "human" or message.id != turn_id:
@@ -162,7 +162,7 @@ def _memory_summary(
             )
             continue
 
-        # why: Scope and outcome come from trusted state. A candidate cannot relabel
+        # Scope and outcome come from trusted state. A candidate cannot relabel
         # itself as belonging to another ticket/customer or to an unresolved turn.
         scoped_memory = {
             **memory,
@@ -255,7 +255,7 @@ def persist_case(
     review_result = state.get("review_result")
     handoff = state.get("handoff")
     if case_outcome == "escalated" and not isinstance(handoff, dict):
-        # why: This is a defensive terminal path. It uses only existing verified
+        # This is a defensive terminal path. It uses only existing verified
         # state and does not spend another model call after escalation is authorized.
         handoff = assemble_fallback_handoff(state)
 
@@ -298,7 +298,7 @@ def persist_case(
     if prior_persistence_event is None:
         current_turn_events.append(persistence_event)
 
-    # why: The batch is built once. A permitted retry sends this exact object again,
+    # The batch is built once. A permitted retry sends this exact object again,
     # so message, handoff and event identifiers cannot drift between attempts.
     outcome_payload = {
         "turn_id": turn_id,
@@ -328,7 +328,7 @@ def persist_case(
             attempts=attempts,
         )
 
-    # why: Long-term memory is a separate, auxiliary store. It starts only after
+    # Long-term memory is a separate, auxiliary store. It starts only after
     # the atomic support transaction commits and cannot roll that transaction back.
     memory, memory_failures = _memory_summary(state, store=store)
     persistence_result = {**core_result, "attempts": attempts, "memory": memory}
@@ -363,7 +363,7 @@ def persist_case(
     }
     persisted_response = core_result.get("approved_response")
     if isinstance(persisted_response, dict):
-        # api: AIMessage's id is the stable key used by add_messages to merge retries.
+        # AIMessage's id is the stable key used by add_messages to merge retries.
         update["messages"] = [
             AIMessage(
                 content=persisted_response["content"],

@@ -61,7 +61,7 @@ def _assemble_scoped_handoff(state):
 
     def copy_json(value):
         """Copy JSON-safe state values; do not stringify unknown Python objects."""
-        # api: nonlocal lets this helper update the enclosing function's counter.
+        # `nonlocal` lets this helper update the enclosing function's counter.
         nonlocal excluded
         try:
             return json.loads(json.dumps(value, allow_nan=False))
@@ -121,7 +121,7 @@ def _assemble_scoped_handoff(state):
     all_results, latest, latest_attempt = [], {}, {}
     for result in state.get("tool_results", []):
         if isinstance(result, dict) and result.get("turn_id") != state["turn_id"]:
-            # why: Archived results are expected in append-only state, not corruption.
+            # Archived results are expected in append-only state, not corruption.
             continue
         if not isinstance(result, dict) or result.get("issue_id") not in issue_ids:
             excluded += 1
@@ -143,7 +143,7 @@ def _assemble_scoped_handoff(state):
             continue
         identity = (result["issue_id"], result["lookup_key"])
         if attempt >= latest_attempt.get(identity, 0):
-            # why: Invalid newer output cannot make an earlier success current again.
+            # Invalid newer output cannot make an earlier success current again.
             latest_attempt[identity] = attempt
             latest.pop(identity, None)
         if (not isinstance(records, list) or not all(isinstance(row, dict) for row in records)
@@ -172,7 +172,7 @@ def _assemble_scoped_handoff(state):
         ) if k in result})
         if copied is None:
             continue
-        # why: Human support receives controlled status explanations, never exception text.
+        # Human support receives controlled status explanations, never exception text.
         copied["reason"] = "Lookup did not complete." if outcome == "technical_failure" else "Recorded scoped lookup outcome."
         all_results.append(copied)
         if attempt >= latest_attempt[identity]:
@@ -183,7 +183,7 @@ def _assemble_scoped_handoff(state):
     handoff = assemble_fallback_handoff(safe)
     handoff["issues"] = safe["issues"]
     handoff["articles"] = safe["retrieved_articles"]
-    # api: dict.fromkeys removes duplicates while retaining first-seen order.
+    # `dict.fromkeys` removes duplicates while retaining first-seen order.
     handoff["source_references"] = list(dict.fromkeys(a["article_id"] for a in safe["retrieved_articles"]))
     handoff["lookup_results"] = safe["tool_results"]  # includes completed not_found findings
     handoff["attempted_lookups"] = [{k: r[k] for k in (
@@ -215,7 +215,7 @@ def _assemble_scoped_handoff(state):
                 handoff["technical_errors"].append({"node": event.get("node"), "error_code": code})
     for issue in safe["issues"]:
         gap_fields = ["missing_information"]
-        # why: A requested business fact may already have been obtained; the issue
+        # A requested business fact may already have been obtained; the issue
         # retains that requirement without falsely reporting it as an unresolved gap.
         if issue.get("coverage") == "awaiting_business_facts":
             gap_fields.append("required_business_facts")
@@ -246,7 +246,7 @@ def prepare_escalation(
     generation/review failures also bypass generation. The same shared fallback
     helper is used on every generation/validation failure; no repair is attempted.
     """
-    # 1. VALIDATE SUPERVISOR AUTHORIZATION AND TRUSTED CASE IDENTITY.
+    # 1. Validate supervisor authorization and trusted case identity.
     assignment = state.get("assignment")
     if (not isinstance(assignment, dict) or assignment.get("agent") != "escalation"
             or not isinstance(assignment.get("task"), str) or not assignment["task"].strip()
@@ -270,7 +270,7 @@ def prepare_escalation(
             or not set(assigned_ids).issubset(ids)):
         raise ValueError("Escalation assignment references unknown or repeated issues.")
 
-    # 2. ASSEMBLE THE COMPLETE FACTUAL BASE, INCLUDING OTHER UNRESOLVED ISSUES.
+    # 2. Assemble the complete factual base, including other unresolved issues.
     working_case = deepcopy(state)
     handoff, excluded = _assemble_scoped_handoff(working_case)
     json.dumps(handoff, allow_nan=False)
@@ -297,7 +297,7 @@ def prepare_escalation(
                                 "issue_ids": handoff["issue_ids"], "excluded_evidence_count": excluded},
                 }]}
 
-    # 3. REUSE COMPLETED WORK OR TAKE THE FALLBACK WITHOUT ANOTHER MODEL CALL.
+    # 3. Reuse completed work or take the fallback without another model call.
     existing = state.get("handoff")
     if isinstance(existing, dict):
         if (existing.get("handoff_source") in {"generated", "deterministic_fallback"}
@@ -334,7 +334,7 @@ def prepare_escalation(
     if working_case["model_calls"] >= limits["max_model_calls"]:
         return finish("escalation_model_budget_exhausted")
 
-    # 4. BUILD THE LOCAL PROMPT; MODEL OUTPUT CAN ONLY ORGANIZE SUPPLIED FACTS.
+    # 4. Build the local prompt; model output can only organize supplied facts.
     catalog = {"request": {"kind": "request", "data": handoff["request"]},
                "reason": {"kind": "escalation_reason", "data": handoff["escalation_reason"]}}
     for field in ("issues", "lookup_results", "articles", "gaps", "technical_errors"):
@@ -353,7 +353,7 @@ def prepare_escalation(
     prompt_value = prompt.invoke({"handoff": json.dumps(handoff, ensure_ascii=False, allow_nan=False),
                                   "catalog": json.dumps(catalog, ensure_ascii=False, allow_nan=False)})
 
-    # 5. ATTEMPT GENERATION ONCE; ANY FAILURE USES THE ALREADY-ASSEMBLED FALLBACK.
+    # 5. Attempt generation once; any failure uses the already-assembled fallback.
     attempts[attempt_key] = 1
     try:
         structured_model = model.with_structured_output(HandoffSummary)
@@ -372,8 +372,8 @@ def prepare_escalation(
     except EscalationCallTimedOut:
         return finish("escalation_call_timeout")
     except Exception:
-        # why: Even transient generation failures go straight to fallback here.
+        # Even transient generation failures go straight to fallback here.
         return finish("escalation_generation_failed")
 
-    # 6. RETURN THE HANDOFF; SUPERVISOR OWNS ACKNOWLEDGEMENT AND PERSISTENCE.
+    # 6. Return the handoff; supervisor owns acknowledgement and persistence.
     return finish()

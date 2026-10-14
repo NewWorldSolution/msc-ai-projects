@@ -2,8 +2,7 @@
 
 This package implements [Part A of the architecture](design/ARCHITECTURE.md): the
 state contract, the six agents, the read-only tools, the workflow factory and the
-persistence helpers, with a passing local test suite. The scenario tests in
-`tests/test_workflow.py` and `tests/test_tools.py` remain skipped placeholders.
+persistence helpers, with a passing local test suite.
 
 ## Workflow and responsibilities
 
@@ -25,9 +24,8 @@ checkpoint/store persistence. Supervisor routes in code and calls a model only
 for draft review. LangChain supplies ChatPromptTemplate, structured model results,
 Operations tool binding and scored article retrieval inside the nodes.
 
-Start ticket_tools.py with load_ticket_context using notebook 02's supplied
-utils.get_session and mapped SQLAlchemy models. Keep database helpers as plain
-functions and all unfinished bodies as L1 TODOs until implementing them.
+ticket_tools.py starts with load_ticket_context using notebook 02's supplied
+utils.get_session and mapped SQLAlchemy models. Database helpers are plain functions.
 
 ## State and update contracts
 
@@ -65,7 +63,8 @@ its named store parameter. Resource objects do not belong in CaseState.
 ## Status and running
 
 Node, tool and factory bodies are implemented; `trace_events` records every routing
-decision, retrieval gate, tool call, review and final outcome. Notebook 02 seeds 14
+decision, retrieval gate, tool call, review and final outcome, and `utils.routing_path`
+renders a turn's routing events as one readable line. Notebook 02 seeds 14
 articles and seven demo tickets; notebook 03 builds the Knowledge store, compiles the
 graph and processes every open ticket with `utils.batch_interface`, presenting only the
 approved reply or an explicit handoff report after a successful save.

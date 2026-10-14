@@ -5,7 +5,7 @@ from pydantic import BaseModel, ValidationError
 
 def schema_field_names(model: type[BaseModel]) -> set[str]:
     """Collect every property name the schema owns, including nested definitions."""
-    # api: model_json_schema() returns the JSON Schema; nested models sit under $defs.
+    # `model_json_schema()` returns the JSON Schema; nested models sit under $defs.
     schema = model.model_json_schema()
     names = set(schema.get("properties", {}))
     for definition in schema.get("$defs", {}).values():
@@ -21,9 +21,9 @@ def schema_mismatch_detail(exc: ValidationError, model: type[BaseModel]) -> str:
     """
     allowed = schema_field_names(model)
     parts = []
-    # api: ValidationError.errors() lists each failed field with its location tuple and type code.
+    # ValidationError.errors() lists each failed field with its location tuple and type code.
     for error in exc.errors()[:5]:
-        # why: pydantic gives list indices as int; a numeric *string* is a model-chosen key.
+        # Pydantic gives list indices as int; a numeric *string* is a model-chosen key.
         location = [str(part) if isinstance(part, int) or str(part) in allowed else "<unexpected-field>"
                     for part in error["loc"]]
         parts.append(".".join(location) + f" ({error['type']})")

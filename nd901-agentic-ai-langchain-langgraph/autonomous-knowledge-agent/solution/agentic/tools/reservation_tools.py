@@ -29,7 +29,7 @@ def _to_iso(value: datetime | None) -> str | None:
         No time zone is inferred or converted, and no state is changed.
     """
 
-    # api: datetime.isoformat() converts a datetime to stable text.
+    # `datetime.isoformat()` converts a datetime to stable text.
     return value.isoformat() if value is not None else None
 
 
@@ -177,7 +177,7 @@ def lookup_reservations(
             "retryable": False,
         }
 
-    # why: A model-supplied customer ID cannot switch the trusted ticket identity.
+    # A model-supplied customer ID cannot switch the trusted ticket identity.
     if customer_id != trusted_customer_id:
         return {
             **provenance,
@@ -248,7 +248,7 @@ def lookup_reservations(
             }
 
         try:
-            # api: date.fromisoformat() validates and parses YYYY-MM-DD.
+            # `date.fromisoformat()` validates and parses YYYY-MM-DD.
             parsed_event_date = date.fromisoformat(event_date)
             if parsed_event_date.isoformat() != event_date or parsed_event_date == date.max:
                 raise ValueError("Event date must be a supported YYYY-MM-DD date.")
@@ -266,7 +266,7 @@ def lookup_reservations(
         usable_event_name or parsed_event_date is not None
     )
 
-    # why: Exact-ID and descriptive searches are separate lookup modes.
+    # Exact-ID and descriptive searches are separate lookup modes.
     if usable_reservation_id and descriptive_search:
         return {
             **provenance,
@@ -298,9 +298,9 @@ def lookup_reservations(
         }
 
     try:
-        # api: get_session guarantees rollback and cleanup when querying fails.
+        # `get_session` guarantees rollback and cleanup when querying fails.
         with get_session(cultpass_engine) as session:
-            # api: join() combines Reservation with its referenced Experience row.
+            # `join()` combines Reservation with its referenced Experience row.
             query = (
                 session.query(
                     cultpass.Reservation,
@@ -317,7 +317,7 @@ def lookup_reservations(
             )
 
             if usable_reservation_id:
-                # why: Customer scope remains enforced even for a unique ID.
+                # Customer scope remains enforced even for a unique ID.
                 query = query.filter(
                     cultpass.Reservation.reservation_id
                     == reservation_id
@@ -329,7 +329,7 @@ def lookup_reservations(
                     )
 
                 if parsed_event_date is not None:
-                    # why: Experience.when is a datetime, so a calendar date
+                    # Experience.when is a datetime, so a calendar date
                     # is represented by a half-open daily range.
                     day_start = datetime.combine(
                         parsed_event_date,
@@ -342,7 +342,7 @@ def lookup_reservations(
                         cultpass.Experience.when < day_end,
                     )
 
-            # api: order_by(...).all() returns every match in stable order.
+            # `order_by(...).all()` returns every match in stable order.
             matches = (
                 query.order_by(
                     cultpass.Experience.when,

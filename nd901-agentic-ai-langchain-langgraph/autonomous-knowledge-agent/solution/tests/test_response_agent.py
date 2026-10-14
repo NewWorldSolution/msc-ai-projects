@@ -39,7 +39,7 @@ def draft(**changes):
     return {"draft": dict(outcome="resolved", channel="chat", subject=None, greeting=None,
                           body="Use the cancellation form.", closing=None, addressed_issue_ids=["issue1"],
                           claim_to_evidence=[dict(claim="Use the cancellation form.", issue_ids=["issue1"], source_ids=["article:1"])],
-                          clarification_questions=[], **changes), "blocker": None}
+                          clarification_questions=[], history_acknowledgement=None, **changes), "blocker": None}
 
 
 def model_with(*effects):
@@ -136,7 +136,7 @@ def clarification(case, *, identity=False):
     return {"draft": dict(outcome="information_requested", channel="chat", subject=None, greeting=None,
                           body="Could you provide the identifying details?", closing=None, addressed_issue_ids=ids,
                           claim_to_evidence=[], clarification_questions=[dict(question="Could you provide the identifying details?",
-                          issue_ids=ids, basis_source_ids=["assignment"])]), "blocker": None}
+                          issue_ids=ids, basis_source_ids=["assignment"])], history_acknowledgement=None), "blocker": None}
 
 
 @pytest.mark.parametrize("identity", [False, True])
@@ -160,8 +160,8 @@ def acknowledgement(case):
     case["assignment"].pop("issue_ids")
     return {"draft": dict(outcome="escalated", channel="chat", subject=None, greeting=None,
                           body="Your request requires human assistance.", closing=None, addressed_issue_ids=["issue1"],
-                          # why: Decision 2026-10-12: a receipt carries no claims.
-                          claim_to_evidence=[], clarification_questions=[]), "blocker": None}
+                          # A receipt carries no claims.
+                          claim_to_evidence=[], clarification_questions=[], history_acknowledgement=None), "blocker": None}
 
 
 def test_acknowledgement_uses_prepared_handoff(case, config):

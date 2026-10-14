@@ -42,12 +42,12 @@ class KnowledgeCheckError(OutputParserException):
 def _validation_detail(exc: Exception) -> str:
     """Name the failed check without copying model output into the trace."""
     if isinstance(exc, ValidationError):
-        # why: Extra keys and dictionary keys in the location were chosen by the model.
+        # Extra keys and dictionary keys in the location were chosen by the model.
         return schema_mismatch_detail(exc, IssueEvidenceAssessment)
     if isinstance(exc, KnowledgeCheckError):
-        # why: LangChain appends a troubleshooting link on later lines, so keep the first.
+        # LangChain appends a troubleshooting link on later lines, so keep the first.
         return str(exc).splitlines()[0]
-    # why: A library parser exception may quote model output, so only its kind is kept.
+    # A library parser exception may quote model output, so only its kind is kept.
     return "Structured output could not be parsed."
 
 class ArticleCitation(BaseModel):
@@ -95,7 +95,7 @@ class RetrievalThresholdRecommendation(BaseModel):
 
     model_config = ConfigDict(extra="forbid", strict=True, str_strip_whitespace=True)
 
-    # api: Field bounds validate the model's numeric output; None means no recommendation.
+    # Field bounds validate the model's numeric output; None means no recommendation.
     threshold: float | None = Field(ge=0.0, le=1.0, allow_inf_nan=False)
     candidate_count: int | None = Field(ge=1)
     rationale: str = Field(min_length=1)
@@ -129,7 +129,7 @@ def invoke_knowledge_search(query, config, timeout):
     their own connection/network timeouts and database-session cleanup.
     """
     executor = ThreadPoolExecutor(max_workers=1)
-    # api: submit runs the read-only search in a worker and returns its Future.
+    # `submit` runs the read-only search in a worker and returns its Future.
     future = executor.submit(search_knowledge, query=query, config=config)
     try:
         return future.result(timeout=timeout)
@@ -187,7 +187,7 @@ def recommend_retrieval_threshold(
             "article_id": article_id, "score": float(score),
         })
 
-    # why: Send each article once while retaining its score for every tested question.
+    # Send each article once while retaining its score for every tested question.
     context = {
         "score_convention": "higher_is_more_relevant",
         "articles": list(articles.values()),
@@ -225,7 +225,7 @@ def recommend_retrieval_threshold(
     messages = prompt.invoke({
         "context": json.dumps(context, ensure_ascii=False, allow_nan=False),
     })
-    # api: with_structured_output requests a response matching the recommendation schema.
+    # `with_structured_output` requests a response matching the recommendation schema.
     structured_model = model.with_structured_output(RetrievalThresholdRecommendation)
     raw = invoke_knowledge_assessment(structured_model, messages, {}, timeout_seconds)
     recommendation = RetrievalThresholdRecommendation.model_validate(raw)
@@ -445,7 +445,7 @@ def retrieve_knowledge(
 
     new_trace = []
 
-    #Determine permitted work for each task
+    # Determine permitted work for each task
 
     requested_mode = assignment.get("retrieval_mode", "initial")
 
@@ -495,7 +495,7 @@ def retrieve_knowledge(
             retrieval_failures[issue_id] = "Knowledge retrieval stopped after a call timeout."
             continue
 
-        # why: Attempt flags alone cannot distinguish success from terminal
+        # Attempt flags alone cannot distinguish success from terminal
         # failure. A reassignment must not approve older evidence after failure.
         for previous_mode in ("initial", "targeted"):
             for previous_status in ("technical_failure", "missing_input"):
@@ -856,7 +856,7 @@ def retrieve_knowledge(
         ),
     ])
 
-    # PREPARE ONE SCOPED ASSESSMENT CONTEXT PER ISSUE.
+    # Prepare one scoped assessment context per issue.
     # Context preparation does not spend a model call or another search allowance.
     lookup_results = working_case_copy.get("tool_results", [])
     if not isinstance(lookup_results, list):
@@ -1001,7 +1001,7 @@ def retrieve_knowledge(
             "verified_lookup_results": [result for result in issue_lookups if result["outcome"] in ("found", "not_found")],
             "unresolved_lookup_results": [result for result in issue_lookups if result["outcome"] not in ("found", "not_found")],
         }
-        # why: Reject non-serializable evidence now; do not stringify unknown facts.
+        # Reject non-serializable evidence now; do not stringify unknown facts.
         json.dumps(assessment_context, ensure_ascii=False, allow_nan=False)
         assessment_contexts[issue_id] = assessment_context
 
@@ -1025,7 +1025,7 @@ def retrieve_knowledge(
     turn_operation_key = json.dumps(
         [turn_id, "knowledge_assessment"], separators=(",", ":")
     )
-    # why: A new assignment must preserve a previous turn-wide stop, especially
+    # A new assignment must preserve a previous turn-wide stop, especially
     # when a timed-out provider request may still be running in its worker.
     for code in turn_stop_codes:
         if attempts.get(f"{turn_operation_key}:stopped:{code}", 0):
@@ -1048,7 +1048,7 @@ def retrieve_knowledge(
             )
         }, sort_keys=True, ensure_ascii=False, allow_nan=False)
 
-        # api: sha256 produces a stable fingerprint of the supplied evidence.
+        # `sha256` produces a stable fingerprint of the supplied evidence.
         evidence_version = sha256(
             evidence_json.encode("utf-8")
         ).hexdigest()
@@ -1065,7 +1065,7 @@ def retrieve_knowledge(
         repair_key = f"{operation_key}:repair"
         error_code = "knowledge_assessment_attempts_exhausted"
 
-        # why: Counters bound retries; this marker records that an operation
+        # Counters bound retries; this marker records that an operation
         # already failed terminally, even when fewer than three calls were made.
         for code in terminal_codes:
             if attempts.get(f"{operation_key}:terminal:{code}", 0):
@@ -1088,7 +1088,7 @@ def retrieve_knowledge(
             }).to_messages()
 
             if attempts.get(repair_key, 0):
-                # why: The failed check is this module's fixed message, never model text.
+                # The failed check is this module's fixed message, never model text.
                 messages.append(SystemMessage(content=(
                     "Repair the assessment structure. Failed check: "
                     f"{assessment_details.get(issue_id)} "
@@ -1097,7 +1097,7 @@ def retrieve_knowledge(
                 )))
 
             try:
-                # api: function_calling avoids OpenAI strict mode, which rejects
+                # `function_calling` avoids OpenAI strict mode, which rejects
                 # the free-form dict in missing_information_reasons.
                 structured_model = model.with_structured_output(
                     IssueEvidenceAssessment, method="function_calling"
@@ -1136,7 +1136,7 @@ def retrieve_knowledge(
                         or not citation.reason.strip()
                         or not any(
                             article["article_id"] == citation.article_id
-                            # why: Quote glyphs and spacing may differ from the stored excerpt; words may not.
+                            # Quote glyphs and spacing may differ from the stored excerpt; words may not.
                             and normalize_text(citation.excerpt) in normalize_text(article["excerpt"])
                             for article in context["articles"]
                         )
@@ -1147,8 +1147,8 @@ def retrieve_knowledge(
                 credential_items = [item for item in candidate.required_business_facts + candidate.missing_information
                                     if mentions_credential(item)]
                 if credential_items:
-                    # why: Decision 2026-10-12: a credential can be neither looked up nor asked for, so it
-                    #   is removed; guidance that needed nothing else applies as it stands.
+                    # A credential can be neither looked up nor asked for, so it
+                    # is removed; guidance that needed nothing else applies as it stands.
                     candidate.required_business_facts = [
                         fact for fact in candidate.required_business_facts if not mentions_credential(fact)]
                     candidate.missing_information = [
@@ -1160,8 +1160,8 @@ def retrieve_knowledge(
                             and not (candidate.required_business_facts or candidate.missing_information)):
                         candidate.applicability = "applies"
                 if candidate.applicability == "applies" and candidate.required_business_facts:
-                    # why: A listed fact is established only if a completed lookup was asked for it;
-                    #   an unrelated lookup must not erase a new requirement.
+                    # A listed fact is established only if a completed lookup was asked for it;
+                    # an unrelated lookup must not erase a new requirement.
                     asked = [normalize_text(fact) for fact in context["issue"].get("required_business_facts", [])]
                     looked_up = bool(context["verified_lookup_results"])
                     unmatched = [fact for fact in candidate.required_business_facts
@@ -1179,7 +1179,7 @@ def retrieve_knowledge(
                 needs_facts = candidate.applicability == "missing_facts"
                 gap = candidate.evidence_gap.strip()
 
-                # why: One named check per message so the repair feedback can say what to fix.
+                # One named check per message so the repair feedback can say what to fix.
                 problem = None
                 if any(not value.strip() for value in facts + missing):
                     problem = "Required facts and missing information must be non-empty text."
@@ -1255,7 +1255,7 @@ def retrieve_knowledge(
 
     working_case_copy["technical_attempts"] = attempts
 
-    # HANDLE ISSUES THAT COULD NOT BE ASSESSED.
+    # Handle issues that could not be assessed.
     for issue in assigned_issues:
         issue_id = issue["issue_id"]
 
@@ -1287,7 +1287,7 @@ def retrieve_knowledge(
             issue["article_ids"] = []
             continue
 
-        #Preserve the validated findings and assign coverage.
+        # Preserve the validated findings and assign coverage.
         issue["evidence_assessment"] = deepcopy(assessment)
         issue["required_business_facts"] = list(
             assessment["required_business_facts"]
@@ -1299,7 +1299,7 @@ def retrieve_knowledge(
             assessment["missing_information_reasons"]
         )
 
-        # api: dict.fromkeys removes duplicates while preserving order.
+        # `dict.fromkeys` removes duplicates while preserving order.
         issue["article_ids"] = list(dict.fromkeys(
             citation["article_id"]
             for citation in assessment["citations"]
@@ -1384,7 +1384,7 @@ def retrieve_knowledge(
         "trace": new_trace,
     }
 
-    # why: Reject values that cannot be serialized.
+    # Reject values that cannot be serialized.
     json.dumps(update, ensure_ascii=False, allow_nan=False)
     return update
 

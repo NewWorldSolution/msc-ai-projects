@@ -323,10 +323,12 @@ def test_real_graph_follow_up_keeps_history_and_persists_approved_email(monkeypa
         notebook = json.loads((Path(__file__).parents[1]/'03_agentic_app.ipynb').read_text())
         inspection = next(''.join(c['source']) for c in notebook['cells']
                           if ''.join(c['source']).startswith('# Inspect every attempted'))
-        scope = {"orchestrator": graph, "store": store, "demo_runs": rows, "json": json}
+        # The inspection cell calls utils.routing_path; the notebook imports utils in its first cell.
+        scope = {"orchestrator": graph, "store": store, "demo_runs": rows, "json": json, "utils": batch}
         exec(compile(inspection, '<inspection cell>', 'exec'), scope)
         report = scope["demo_inspections"][0]
         assert report["checkpoint_count"] > 2
+        assert report["routing"] == ["email -> intake -> supervisor"] * 2
         assert report["pending_nodes"] == []
         assert len(report["messages"]) == 4 and len(report["turns"]) == 2
         assert any(event["node"] == "intake" for event in report["trace"])

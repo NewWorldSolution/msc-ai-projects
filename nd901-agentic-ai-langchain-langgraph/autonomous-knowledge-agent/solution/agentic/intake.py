@@ -30,7 +30,7 @@ def _lookup_with_retry(
     """
     used = attempts.get(lookup_key, 0)
     if not isinstance(used, int) or isinstance(used, bool) or used < 0:
-        # why: Malformed checkpoint counters cannot grant a fresh retry allowance.
+        # Malformed checkpoint counters cannot grant a fresh retry allowance.
         used = 2
     result = {
         "outcome": failure_outcome,
@@ -92,10 +92,10 @@ def prepare_case(
         retry, recorded in technical_attempts and preparation provenance.
         Raw database or store exceptions are never exposed.
     """
-    # api: LangGraph injects the compiled BaseStore into the named store parameter.
+    # LangGraph injects the compiled BaseStore into the named store parameter.
     messages = state.get("messages", [])
     current_message = messages[-1] if isinstance(messages, list) and messages else None
-    # api: getattr(object, name, default) returns the default when the attribute
+    # `getattr(object, name, default)` returns the default when the attribute
     # is absent instead of raising AttributeError.
     turn_id = getattr(current_message, "id", None)
 
@@ -105,7 +105,7 @@ def prepare_case(
         or not turn_id.strip()
     ):
         return {
-            # why: Omitted keys survive graph merging; clear prior release signals.
+            # Omitted keys survive graph merging; clear prior release signals.
             "outcome": None,
             "approved_response": None,
             "handoff": None,
@@ -135,10 +135,10 @@ def prepare_case(
         and isinstance(prior_preparation, dict)
         and prior_preparation.get("thread_id") == thread_id
     ):
-        # why: A completed preparation (including failure) has spent its allowance.
+        # A completed preparation (including failure) has spent its allowance.
         return {}
 
-    # why: Only a new human-message ID resets current-turn controls. History and
+    # Only a new human-message ID resets current-turn controls. History and
     # ticket-scoped identity correction are preserved by omitting them from the delta.
     update: CaseState = {}
     if is_new_turn:
@@ -191,7 +191,7 @@ def prepare_case(
         preparation_error_code = "invalid_intake_context"
     else:
         ticket_key = f"{turn_id}:intake:ticket:{thread_id}"
-        # api: lambda creates a deferred call so both attempts reuse trusted arguments.
+        # `lambda` creates a deferred call so both attempts reuse trusted arguments.
         ticket_result = _lookup_with_retry(
             lambda: load_ticket_context(thread_id, udahub_engine),
             attempts=attempts,
@@ -370,7 +370,7 @@ def prepare_case(
                         update["customer_memory"] = recalled_memory
                         memory_recall_outcome = "completed"
                     except Exception:
-                        # why: Historical memory is auxiliary context. Its failure
+                        # Historical memory is auxiliary context. Its failure
                         # does not erase separately verified current customer facts.
                         update["customer_memory"] = []
                         memory_recall_outcome = "technical_failure"

@@ -300,7 +300,7 @@ def test_transient_commit_failure_rolls_back_the_whole_batch(
         finally:
             session.close()
 
-    # api: monkeypatch.setattr temporarily replaces one module attribute for this test.
+    # `monkeypatch.setattr` temporarily replaces one module attribute for this test.
     monkeypatch.setattr(ticket_tools, "get_session", failing_commit)
 
     result = ticket_tools.save_ticket_outcome("ticket-1", resolved_outcome(), engine)

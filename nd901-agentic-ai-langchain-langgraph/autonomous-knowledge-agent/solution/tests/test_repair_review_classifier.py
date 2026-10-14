@@ -171,7 +171,7 @@ def test_subscription_issue_keeps_the_classifier_facts_when_present(monkeypatch,
     case["model_calls"] = 1
     result = supervisor.supervise_case(case, config, model=make_model(), classifier_model=make_model())
     assert result.goto == "operations"
-    # why: Unchanged issues are not part of the update; the classifier fact stands as given.
+    # Unchanged issues are not part of the update; the classifier fact stands as given.
     assert "issues" not in result.update
     assert case["issues"][0]["required_business_facts"] == ["Payment status"]
 
@@ -325,7 +325,7 @@ def test_classifier_never_keeps_a_credential_as_missing_information(monkeypatch,
     issue_record = delta["issues"][0]
     assert issue_record["missing_information"] == ["preferred contact time"]
     assert list(issue_record["missing_information_reasons"]) == ["preferred contact time"]
-    # why: "email verification status" asks about a process, not for a secret, so it stays.
+    # "email verification status" asks about a process, not for a secret, so it stays.
     assert issue_record["required_business_facts"] == ["email verification status"]
     assert delta["trace"][-1]["payload"]["dropped_credential_requests"] == 1
 

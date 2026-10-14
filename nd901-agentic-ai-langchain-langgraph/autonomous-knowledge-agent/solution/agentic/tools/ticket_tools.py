@@ -44,7 +44,7 @@ def load_ticket_context(ticket_id: str, engine: Engine) -> dict[str, Any]:
             "reason": "A non-empty ticket ID is required.",
         }
 
-    # api: get_session opens a session and guarantees rollback/cleanup on errors.
+    # `get_session` opens a session and guarantees rollback/cleanup on errors.
     try:
         with get_session(engine) as session:
             ticket = session.query(udahub.Ticket).filter_by(ticket_id=ticket_id).first()
@@ -160,7 +160,7 @@ def save_ticket_outcome(
             "reason": "The persistence outcome must be a dictionary.",
         }
 
-    # api: dict.get returns the value for a key, or None when the key is absent.
+    # `dict.get` returns the value for a key, or None when the key is absent.
     turn_id = outcome.get("turn_id")
     case_outcome = outcome.get("outcome")
 
@@ -234,7 +234,7 @@ def save_ticket_outcome(
     response_message_id = None
     response_content = None
 
-    # why: Normal outcomes must never reach persistence without customer wording.
+    # Normal outcomes must never reach persistence without customer wording.
     if case_outcome in {"resolved", "information_requested"} and not isinstance(
         approved_response, dict
     ):
@@ -361,11 +361,11 @@ def save_ticket_outcome(
                 ),
             }
 
-        # why: The explicit marker prevents an internal handoff from being confused
+        # The explicit marker prevents an internal handoff from being confused
         # with customer-facing content when both use the ticket_messages table.
         persisted_handoff = {**handoff, "message_type": "human_handoff"}
         try:
-            # api: json.dumps converts the structured handoff into storable text.
+            # `json.dumps` converts the structured handoff into storable text.
             handoff_content = json.dumps(persisted_handoff, sort_keys=True)
         except (TypeError, ValueError):
             return {
@@ -448,7 +448,7 @@ def save_ticket_outcome(
             }
 
         try:
-            # api: json.dumps verifies that SQLAlchemy's JSON column can encode it.
+            # `json.dumps` verifies that SQLAlchemy's JSON column can encode it.
             json.dumps(event_payload)
         except (TypeError, ValueError):
             return {
@@ -512,7 +512,7 @@ def save_ticket_outcome(
 
     try:
         with get_session(engine) as session:
-            # api: Session.get loads one row by its primary key, or returns None.
+            # Session.get loads one row by its primary key, or returns None.
             ticket = session.get(udahub.Ticket, ticket_id)
             if ticket is None:
                 return {
@@ -535,7 +535,7 @@ def save_ticket_outcome(
                     "reason": "The ticket has no metadata record to update.",
                 }
 
-            # why: Automated follow-up cannot undo an existing human handoff.
+            # Automated follow-up cannot undo an existing human handoff.
             if metadata.status == "escalated" and case_outcome != "escalated":
                 return {
                     "saved": False,
@@ -591,9 +591,9 @@ def save_ticket_outcome(
                         ),
                     }
 
-            # why: All conflicts are checked before the first mutation, so an early
+            # All conflicts are checked before the first mutation, so an early
             # controlled failure cannot commit only part of the requested outcome.
-            # api: Session.add_all schedules every mapped object for one flush.
+            # Session.add_all schedules every mapped object for one flush.
             session.add_all(new_messages)
             session.add_all(new_trace_events)
             metadata.status = ticket_status
@@ -619,7 +619,7 @@ def save_ticket_outcome(
             "reason": "The support outcome could not be saved.",
         }
 
-    # why: Reaching this line proves get_session exited without a commit error.
+    # Reaching this line proves get_session exited without a commit error.
     return {
         "saved": True,
         "ticket_id": ticket_id,

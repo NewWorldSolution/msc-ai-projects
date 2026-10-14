@@ -132,7 +132,7 @@ class TraceEvent(Base):
     event_type = Column(String, nullable=False, index=True)
     outcome = Column(String, index=True)
     reason = Column(Text)
-    # api: JSON stores a Python dictionary as structured database data.
+    # JSON stores a Python dictionary as structured database data.
     payload = Column(JSON, nullable=False, default=dict)
     created_at = Column(DateTime, default=func.now(), index=True)
 

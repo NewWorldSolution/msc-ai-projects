@@ -5,10 +5,8 @@ import json
 from unittest.mock import Mock
 
 import pytest
-from langchain_core.exceptions import OutputParserException
 from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
 from langchain_core.messages import AIMessage, HumanMessage
-from langchain_core.tools import tool
 
 from agentic.agents import classifier, supervisor
 from agentic.model_budget import ModelCallBudgetExceeded, build_model_call_guard
@@ -92,43 +90,6 @@ def test_guard_rejects_invalid_limit(limit):
         build_model_call_guard({"model_calls": 0}, max_model_calls=limit)
 
 
-@pytest.mark.parametrize("first_error", [None, TimeoutError("SECRET"),
-                                       OutputParserException("SECRET"), RuntimeError("SECRET")])
-def test_real_loop_shares_counter_with_classifier(monkeypatch, case, assessment, first_error):
-    effects = [assessment] if first_error is None else [first_error, assessment]
-    calls = Mock(side_effect=effects)
-    monkeypatch.setattr(classifier, "assess_request", calls)
-    model = make_model()
-    guard = build_model_call_guard(case, max_model_calls=8)
-    routing_tool = supervisor.build_classifier_routing_tool(
-        case, classifier_model=model, reserve_model_call=guard,
-    )
-    agent = supervisor.build_supervisor_agent(model, [routing_tool], reserve_model_call=guard)
-    agent.invoke({"messages": [HumanMessage(content="Classify the prepared case.")]},
-                 config={"max_concurrency": 1, "recursion_limit": 20})
-    expected_classifier_calls = 2 if isinstance(first_error, (TimeoutError, OutputParserException)) else 1
-    assert calls.call_count == expected_classifier_calls
-    assert model.invocations == 2
-    assert case["model_calls"] == 2 + expected_classifier_calls
-    assert case["trace"][0] == {"event_id": "intake"}
-    assert "SECRET" not in json.dumps(case["trace"])
-    assert case["classification_status"] == ("failed" if isinstance(first_error, RuntimeError) else "completed")
-
-
-def test_duplicate_tool_call_does_not_spend_classifier_budget_again(monkeypatch, case, assessment):
-    calls = Mock(return_value=assessment)
-    monkeypatch.setattr(classifier, "assess_request", calls)
-    model = make_model(duplicate=True)
-    guard = build_model_call_guard(case, max_model_calls=3)
-    routing_tool = supervisor.build_classifier_routing_tool(case, classifier_model=model, reserve_model_call=guard)
-    graph = supervisor.build_supervisor_agent(model, [routing_tool], reserve_model_call=guard)
-    result = graph.invoke({"messages": [HumanMessage(content="Classify.")]},
-                          config={"max_concurrency": 1, "recursion_limit": 20})
-    assert calls.call_count == 1
-    assert case["model_calls"] == 3
-    assert len([message for message in result["messages"] if message.type == "tool"]) == 2
-
-
 @pytest.mark.parametrize("limit, initial, dispatch", [(1, 0, True), (2, 0, True), (2, 2, False)])
 def test_supervisor_dispatches_without_spending_calls_or_saves_exhausted_turn(
         monkeypatch, case, assessment, limit, initial, dispatch):
@@ -178,15 +139,3 @@ def test_classifier_preserves_attempts_when_retry_is_denied(monkeypatch, case):
     assert "SECRET" not in json.dumps(result)
 
 
-def test_tool_budget_exception_reaches_caller(case):
-    @tool
-    def route_to_classifier() -> str:
-        """Demonstrate an exhausted tool guard."""
-        raise ModelCallBudgetExceeded("exhausted")
-    model = make_model()
-    guard = build_model_call_guard(case, max_model_calls=3)
-    graph = supervisor.build_supervisor_agent(model, [route_to_classifier], reserve_model_call=guard)
-    with pytest.raises(ModelCallBudgetExceeded):
-        graph.invoke({"messages": [HumanMessage(content="Classify.")]},
-                     config={"max_concurrency": 1, "recursion_limit": 20})
-    assert model.invocations == 1

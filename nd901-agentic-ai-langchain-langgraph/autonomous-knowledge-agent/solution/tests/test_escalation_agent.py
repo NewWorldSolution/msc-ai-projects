@@ -288,7 +288,7 @@ def test_experience_lookup_does_not_require_customer(case,config):
 
 def test_nonserializable_evidence_is_excluded_without_stringifying(case,config):
     case["issues"][0]["missing_information"]=[object()]
-    # deepcopy(object()) has a different identity; compare the source field directly instead.
+    # `deepcopy(object())` has a different identity; compare the source field directly instead.
     original=case["issues"][0]["missing_information"][0]
     model=model_with()
     result=escalation.prepare_escalation(case,config,model=model)
