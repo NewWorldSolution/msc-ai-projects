@@ -52,6 +52,10 @@ HISTORY_ACKNOWLEDGEMENTS = {
     "same_topic": "Welcome back. We helped you with this before, so here is the guidance again.",
     "other_topic": "Welcome back, and thank you for contacting us again.",
 }
+# A first-time customer's reply must not claim earlier contact; these phrases are unambiguous.
+HISTORY_CLAIMS = ("welcome back", "you asked", "last time", "as before", "you mentioned", "previously",
+                  "once more", "you prefer", "your preference", "helped you before", "contacting us again",
+                  "received help", "received assistance")
 # Topic words decide whether earlier help was about the same thing; these carry no topic.
 FILLER_WORDS = frozenset((
     "guidance", "provided", "provide", "please", "keep", "your", "with", "this", "that", "from", "have",
@@ -327,23 +331,27 @@ def _acknowledges_history(sentence, memory_words):
 
 
 def _personalize(draft, body, case, issue_ids):
-    """Guarantee that a returning customer's answer acknowledges the earlier help.
+    """Open a returning customer's answer with an acknowledgement; keep history out of a first-time reply.
 
     The model is asked to open with the sentence and copy it into history_acknowledgement.
-    The application accepts it when it is in the body and reads as an acknowledgement,
-    otherwise accepts the body's first sentence when that one does, and otherwise opens
-    the body with a fixed sentence. A first-time customer gets no acknowledgement.
-    Returns the body and an audit record, or the body unchanged and None.
+    The application accepts it when it stands in the opening paragraph and reads as an
+    acknowledgement, otherwise accepts the body's first sentence when that one does, and
+    otherwise opens the body with a fixed sentence. For a customer with no recalled resolved
+    issue, a declared acknowledgement or an opening sentence that claims earlier contact is
+    removed and counted. Returns the body, the audit record or None, and the removed count.
     """
     memory = [item for item in case.get("customer_memory", []) if isinstance(item, dict)]
     prior_help = [item for item in memory if item.get("memory_type") == "resolved_issue"]
-    if case["outcome"] != "resolved" or not prior_help:
-        return body, None
-    memory_words = _content_words(" ".join(str(item.get("content") or "") for item in memory))
     offered = (draft.history_acknowledgement or "").strip()
+    if not prior_help:
+        return _without_history_claims(body, offered)
+    if case["outcome"] != "resolved":
+        return body, None, 0
+    memory_words = _content_words(" ".join(str(item.get("content") or "") for item in memory))
     first_line = next((line for line in body.split("\n") if line.strip()), "")
     first_sentence = next((part for part in re.split(r"(?<=[.!?])\s+", first_line) if part.strip()), "")
-    if offered and normalize_text(offered) in normalize_text(body) and _acknowledges_history(offered, memory_words):
+    # The declared sentence counts only where the customer reads first: the opening paragraph.
+    if offered and normalize_text(offered) in normalize_text(first_line) and _acknowledges_history(offered, memory_words):
         acknowledgement, source = offered, "model"
     elif _acknowledges_history(first_sentence, memory_words):
         acknowledgement, source = first_sentence.strip(), "body"
@@ -356,7 +364,32 @@ def _personalize(draft, body, case, issue_ids):
         source = "application"
         body = f"{acknowledgement}\n\n{body}"
     return body, {"acknowledgement": acknowledgement, "source": source,
-                  "memory_ids": [item["memory_id"] for item in prior_help if isinstance(item.get("memory_id"), str)]}
+                  "memory_ids": [item["memory_id"] for item in prior_help if isinstance(item.get("memory_id"), str)]}, 0
+
+
+def _without_history_claims(body, offered):
+    """Remove sentences that claim earlier contact from a first-time customer's reply."""
+    removed, position, lines = 0, 0, []
+    for line in body.split("\n"):
+        sentences = [part for part in re.split(r"(?<=[.!?])\s+", line) if part.strip()]
+        kept = []
+        for sentence in sentences:
+            lowered = normalize_text(sentence)
+            claims_history = (bool(offered) and lowered == normalize_text(offered)) or (
+                position == 0 and any(phrase in lowered for phrase in HISTORY_CLAIMS))
+            position += 1
+            if claims_history:
+                removed += 1
+            else:
+                kept.append(sentence)
+        lines.append(" ".join(kept) if sentences else line)
+    if not removed:
+        return body, None, 0
+    remaining = "\n".join(lines).strip()
+    if not remaining:
+        raise ValueError("A first-time customer's reply must not refer to earlier contact; "
+                         "nothing remained after removing that sentence.")
+    return remaining, None, removed
 
 
 def _validate_draft(draft, case, issue_ids, sources):
@@ -371,7 +404,7 @@ def _validate_draft(draft, case, issue_ids, sources):
             or set(draft.addressed_issue_ids) != set(issue_ids) or not draft.body.strip()):
         raise ValueError("Draft must address exactly the assigned issues.")
     body = draft.body.strip()
-    body, personalization = _personalize(draft, body, case, issue_ids)
+    body, personalization, removed_history_sentences = _personalize(draft, body, case, issue_ids)
     personalized_greeting = False
     removed_receipt_sentences = 0
     framing = {"subject": draft.subject, "greeting": draft.greeting, "closing": draft.closing}
@@ -524,6 +557,7 @@ def _validate_draft(draft, case, issue_ids, sources):
     value["claim_to_evidence"] = [claim.model_dump(mode="json") for claim in claims]
     value["dropped_assignment_claims"] = dropped_assignment_claims
     value["removed_receipt_sentences"] = removed_receipt_sentences
+    value["removed_history_sentences"] = removed_history_sentences
     for item, keys in zip(value["claim_to_evidence"], canonical_claims):
         item["source_ids"] = keys
     for item, keys in zip(value["clarification_questions"], canonical_questions):
@@ -683,7 +717,7 @@ def draft_response(
         context = {
             "request": current.content, "channel": state["channel"], "outcome": outcome,
             "assignment": assignment, "assigned_issue_ids": issue_ids,
-            # The Knowledge agent's reasoning sentences were being copied into the claim
+            # The Knowledge agent's reasoning sentences would otherwise be copied into the claim
             # field; Response gets the issue facts it needs and none of that prose.
             "issues": [{key: i[key] for key in RESPONSE_ISSUE_FIELDS if key in i}
                        for i in issues if i["issue_id"] in issue_ids],
@@ -745,9 +779,9 @@ def draft_response(
     ])
     prompt_value = prompt.invoke({"context": context_json})
     if context["returning_customer"]:
-        # A rule buried in the long system prompt was ignored and every answer opened with the fixed
-        # fallback sentence, so the instruction is repeated here as its own message, right next to the
-        # memory it refers to. The reminder is prompt input only and is never written to the trace.
+        # A rule inside the long system prompt alone is not followed reliably, so the instruction is
+        # repeated here as its own message, right next to the memory it refers to. The reminder is
+        # prompt input only and is never written to the trace.
         prior_help = [item["content"] for item in memory_context if item["memory_type"] == "resolved_issue"][:5]
         preferences = [item["content"] for item in memory_context if item["memory_type"] == "preference"][:3]
         reminder = (

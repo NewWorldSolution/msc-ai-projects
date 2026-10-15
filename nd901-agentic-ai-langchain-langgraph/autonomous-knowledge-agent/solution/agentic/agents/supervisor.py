@@ -944,11 +944,11 @@ def supervise_case(
 
         unsupported_issues = [issue for issue in issues if issue["category"] == "unsupported"]
         for issue in issues:
-            # Relying on the classifier's flag alone once skipped the lookup, so the fact is added here.
+            # The classifier's flag alone can leave the lookup without a target, so the fact is named here.
             if issue["category"] == "subscription" and not issue["required_business_facts"]:
                 issue["required_business_facts"] = [SUBSCRIPTION_RECORD_FACT]
-        # A lookup needs a named target. needs_operations without any
-        # required fact sent Operations out to choose tools freely, and it failed on one.
+        # A lookup needs a named target; needs_operations without any
+        # required fact would send Operations out to choose tools freely.
         operations_issues = [issue for issue in issues if issue["required_business_facts"]]
         clarification_issues = [issue for issue in issues if issue["category"] == "unknown" or issue["missing_details"]]
 

@@ -253,7 +253,7 @@ def test_step_seven_applies_append_only_deltas_without_message_leakage(monkeypat
     graph.add_edge("knowledge", END)
     result = graph.compile().invoke(case)
     assert result["tool_results"] == [old_result, new_result]
-    # Routing decisions now add their own event; the append-only check ignores them.
+    # Routing decisions add their own event; the append-only check ignores them.
     assert [event["event_id"] for event in result["trace"]
             if event.get("event_type") != "routing_decision"] == ["intake", "new-event"]
     assert any(event.get("event_type") == "routing_decision" for event in result["trace"])

@@ -147,8 +147,8 @@ document, so the design is written first and nothing else starts until it exists
 ## Constraints that are easy to forget
 
 - **`create_react_agent` is banned for the orchestrator.** "create the graph from
-  scratch. Do not use the prebuilt workflow." This is the same call already made
-  and logged for Energy Advisor in my study notes (2026-08-12).
+  scratch. Do not use the prebuilt workflow." This is the same call I made for the
+  Energy Advisor project.
   It does *not* obviously ban it for the leaf agents; decide that in step 1 and
   log the decision.
 - **No imports reaching outside `solution/`.** Every path inside the solution is

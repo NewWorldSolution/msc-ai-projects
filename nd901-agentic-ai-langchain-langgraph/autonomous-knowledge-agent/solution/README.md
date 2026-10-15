@@ -103,8 +103,8 @@ These are the main design choices, taken while building and recorded as they wer
 - **Memory with limits.** Resolved issues and stated preferences are remembered across
   tickets and used for tone and context, never as proof of a current fact. A returning
   customer's answer opens by acknowledging the earlier help and follows a stored
-  preference such as "keep replies concise", so the same question does not get the same
-  reply twice; a stated preference is stored once.
+  preference such as "keep replies concise"; a preference already in memory is not
+  stored again.
 
 ## What is logged
 
@@ -131,6 +131,8 @@ response -> supervisor -> persist -> customer (answer)`.
   ever written by the agents.
 - The returning-customer acknowledgement is guaranteed by code, but its wording comes
   from the model only when the model writes one; otherwise a fixed sentence is used.
+  Because the wording is the model's, two answers to the same question from the same
+  customer can still come out identical.
 - When a message contains one clear request and a second, vague remark, the system
   answers the clear request and does not act on the vague remark in that turn. The
   customer can raise it again in a follow-up. This was a deliberate choice: asking the

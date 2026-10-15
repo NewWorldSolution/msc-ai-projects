@@ -143,3 +143,37 @@ def test_first_time_customer_gets_no_extra_turn(case, config):
 def test_acknowledgement_field_is_required_in_the_schema():
     # A required field is filled far more reliably than an optional one by the structured-output call.
     assert "history_acknowledgement" in response.ResponseDraft.model_json_schema()["required"]
+
+
+def test_declared_sentence_outside_the_opening_does_not_count(case, config):
+    # The customer reads the opening first; a greeting buried at the end is not an opening.
+    result = drafted(returning(case), config, variant(body=f"{FORM} Welcome back!", history_acknowledgement="Welcome back!"))
+    assert result["personalization"]["source"] == "application"
+    assert result["body"].startswith(response.HISTORY_ACKNOWLEDGEMENTS["same_topic"])
+    assert result["body"].endswith("Welcome back!")
+
+
+def test_first_time_customer_loses_any_claim_of_earlier_contact(case, config):
+    result = drafted(case, config, variant(body=f"Welcome back! {FORM}", history_acknowledgement="Welcome back!"))
+    assert result["body"] == FORM and result["removed_history_sentences"] == 1
+    assert result["history_acknowledgement"] is None and result["personalization"] is None
+    declared = "As you asked last time, here it is."
+    result = drafted(case, config, variant(body=f"{FORM} {declared}", history_acknowledgement=declared))
+    assert result["body"] == FORM and result["removed_history_sentences"] == 1
+    result = drafted(case, config, variant(body=f"Thanks for reaching out. {FORM}"))
+    assert result["body"] == f"Thanks for reaching out. {FORM}" and result["removed_history_sentences"] == 0
+
+
+def test_first_time_reply_that_is_only_a_history_claim_goes_to_repair(case, config):
+    value = variant(body="Welcome back!", claim_to_evidence=[], history_acknowledgement="Welcome back!")
+    result, model = call(case, config, value, value)
+    assert model.with_structured_output.return_value.invoke.call_count == 2
+    assert result["trace"][-1]["payload"]["detail"].startswith("A first-time customer's reply must not refer to earlier contact")
+
+
+def test_first_time_receipt_and_clarification_are_cleaned_too(case, config):
+    from test_response_agent import acknowledgement
+    value = acknowledgement(case)
+    value["draft"].update(body="Welcome back! Your request requires human assistance.", history_acknowledgement="Welcome back!")
+    result = drafted(case, config, value)
+    assert result["body"] == "Your request requires human assistance." and result["removed_history_sentences"] == 1

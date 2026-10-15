@@ -285,7 +285,7 @@ def classify_ticket(
                 ]
             for issue in candidate.issues:
                 # Never ask the customer for a credential and never list
-                # one as a business fact; the prompt rule alone did not hold.
+                # one as a business fact; the prompt rule alone is not enough.
                 credential_items = [item for item in issue.missing_information + issue.required_business_facts
                                     if mentions_credential(item)]
                 dropped_credential_requests += len(credential_items)
@@ -293,7 +293,7 @@ def classify_ticket(
                 issue.missing_information_reasons = {k: v for k, v in issue.missing_information_reasons.items()
                                                      if k in issue.missing_information}
                 issue.required_business_facts = [f for f in issue.required_business_facts if not mentions_credential(f)]
-            # The prompt asks the model to merge duplicates, and it never does,
+            # The prompt asks the model to merge duplicates, which cannot be relied on,
             # so duplicates and hedging are removed here instead. Same task text twice is
             # one issue; an unknown issue beside a classified one is hedging, not a request.
             hedging = {"unknown", "unsupported"}
@@ -309,11 +309,10 @@ def classify_ticket(
                 return (a != b and len(shorter) >= 8 and shorter in longer
                         and (first.category in hedging or second.category in hedging))
 
-            # I tried letting the model confirm a suspected hedge instead of deciding here, and it
-            # kept the hedge two times out of three, which blocked the real answer behind a
-            # clarification. So the fixed rule stands: a contained task with a hedging side is one
-            # request, and an unknown issue beside a classified one is hedging. The cost, a lost
-            # second vague remark, is noted in the README.
+            # Letting the model confirm a suspected hedge keeps the hedge too often and blocks the
+            # real answer behind a clarification, so a fixed rule decides: a contained task with a
+            # hedging side is one request, and an unknown issue beside a classified one is hedging.
+            # The cost, a lost second vague remark, is noted in the README.
             kept = []
             for issue in candidate.issues:
                 match = next((k for k in kept if same_text(k, issue) or contained(k, issue)), None)

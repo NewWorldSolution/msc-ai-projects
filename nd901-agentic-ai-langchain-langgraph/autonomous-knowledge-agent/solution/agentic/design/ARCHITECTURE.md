@@ -8,10 +8,8 @@
 
 **Updated:** 2026-10-14
 
-**Status:** submission design agreed and implemented. Node, tool and agent bodies are
-implemented with a passing local test suite and no skipped tests. Part A specifies the
-version built. Part B records future work and is explicitly outside the submission
-implementation target.
+**Status:** implemented. Part A specifies the version built and tested. Part B records
+future work and is outside the submission.
 
 # Part A: Submission design
 
@@ -237,10 +235,9 @@ answers the reviewer also lists `unsupported_sentences`, every draft sentence it
 article or record. A listed sentence that lies inside a mapped claim, or that is the
 returning-customer acknowledgement, is judged through that claim or through memory; a listed
 sentence that no claim covers fails the grounding check in code and is written into the
-grounding findings and revision reasons. Clarifications are exempt, because in one test run the reviewer listed the clarification
-question itself. I also tried handing the reviewer a computed list of every sentence without
-a claim; that turned the review into a coverage check and rejected good answers, so it was
-dropped.
+grounding findings and revision reasons. Clarifications are exempt, because the reviewer would otherwise list the clarification
+question itself. The reviewer is not handed a computed list of every sentence without a
+claim: that turns the review into a coverage check and rejects good answers.
 A visit to Supervisor does not itself imply a model call. Log actual
 calls, including permitted retries, rather than assuming a fixed count per ticket.
 
@@ -312,9 +309,8 @@ task text is identical after normalisation, or contained in the other when one r
 unknown or unsupported (two classified requests are never merged; a classified reading is
 kept over an unknown or unsupported one; unknown against unsupported on the same text is
 sent to the one repair call, after which the first reading stands), and drops `unknown` issues
-when a classified issue is present. I also tried asking the model to confirm these cases instead of deciding in code; it
-kept the hedge two times in three and blocked the answer behind a clarification, so the
-rule stays in code. The accepted cost is that a genuine second vague remark beside a clear request
+when a classified issue is present. Asking the model to confirm these cases instead of deciding in code is not used: it
+keeps the hedge too often and blocks the answer behind a clarification. The accepted cost is that a genuine second vague remark beside a clear request
 is not acted on in that turn and must come back as a follow-up.
 Missing information or required facts that name a credential are removed in code and counted.
 A stated preference that is not a quote from the current message, for example one
@@ -467,26 +463,30 @@ because framing is boilerplate rather than a business claim. The body is never d
 Keep internal IDs, raw errors and review information outside customer wording.
 
 A returning customer, one whose recalled memory holds a resolved issue, must notice that
-the system remembers them, so two replies to the same request are not identical. The
-model is asked to open a resolved answer with one natural sentence that acknowledges the
-earlier help or a stated preference, and to declare that sentence in
-`history_acknowledgement`, a required field; for a returning customer the instruction is
-repeated as its own message next to the recalled memory, because the same rule inside the
-long system prompt was ignored in a test run. The application accepts the declared sentence when it is in
-the body, signals earlier contact (a fixed marker list: "welcome back", "before",
-"you asked" and similar) and names something the memory names; otherwise it accepts the
+the system remembers them. The model is asked to open a resolved answer with one natural
+sentence that acknowledges the earlier help or a stated preference, and to declare that
+sentence in `history_acknowledgement`, a required field; for a returning customer the
+instruction is also given as its own message next to the recalled memory, because a rule
+inside the long system prompt alone is not followed reliably. The application accepts the
+declared sentence when it stands in the opening paragraph of the body and signals earlier
+contact: either the phrase "welcome back", or a history marker ("before", "you asked",
+"last time" and similar) together with a word the memory names. Otherwise it accepts the
 body's opening sentence when that one qualifies; otherwise it opens the body with a fixed
-sentence, "We helped you with this before, so here is the guidance again" when the
-earlier help shares its topic words with the current issue, or a neutral welcome back
-when it does not. The source of the sentence (model, body or application) and the
-memory IDs behind it are recorded in the draft. The code requires the sentence only on
-resolved answers; the reminder is given for every reply to a returning customer, so the
-model may greet them in a clarification or receipt as well, and the reviewer judges that
-sentence through memory. A first-time customer never gets one. For email, a generic greeting is
-replaced by "Hello {first name}," from the verified account record; a greeting that
-already names the customer stays. Memory remains context, never evidence for a
-business fact; the reviewer is told that the acknowledgement is courtesy backed by
-memory and judges it through memory rather than listing it as unsupported.
+sentence, "We helped you with this before, so here is the guidance again" when the earlier
+help shares its topic words with the current issue, or a neutral welcome back when it does
+not. A declared sentence placed later in the body does not count as the opening. The source
+of the sentence (model, body or application) and the memory IDs behind it are recorded in
+the draft. The code requires the sentence only on resolved answers; the reminder is given
+for every reply to a returning customer, so the model may greet them in a clarification or
+receipt as well, and the reviewer judges that sentence through memory. The wording is the
+model's, so two answers to the same question can still coincide. A first-time customer, one
+with no recalled resolved issue, gets no such sentence: a declared acknowledgement, or an
+opening sentence that claims earlier contact, is removed from the body and counted, for any
+outcome. For email, a generic greeting is replaced by "Hello {first name}," from the
+verified account record; a greeting that already names the customer stays. Memory remains
+context, never evidence for a business fact; the reviewer is told that the acknowledgement
+is courtesy backed by memory and judges it through memory rather than listing it as
+unsupported.
 
 **Success:** complete supported wording, appropriate to the outcome and channel,
 returned for approval of the exact current draft before presentation.
@@ -809,8 +809,8 @@ the memory failure. The memory write summary is a `memory_write_summary` event i
 checkpointed trace; it is written after the support commit, so it is not among that
 turn's committed `trace_events` rows. There is no automatic replay queue.
 
-A stated preference that recalled memory already holds is not written again, so the
-store keeps one copy per preference. The long-term store is not reset by notebook 02 and
+A stated preference that recalled memory already holds is not written again; copies
+stored before this rule stay in the store. The long-term store is not reset by notebook 02 and
 persists across demonstration runs on purpose: a customer seen in an earlier run is
 recalled as a returning customer, and the Response contract (4.5) turns that recall into
 a visible acknowledgement. The demo must demonstrate
@@ -862,11 +862,9 @@ attempted thread through `get_state` and `get_state_history`, showing conversati
 tool usage, trace events and stored memory. Per-turn reports retain the memory
 recalled at Intake so the returning-customer example can be checked.
 
-The pinned requirements were checked against the project's virtual environment: all 21
-distributions matched, and the LangChain/LangGraph, SQLite checkpoint/store, Chroma,
-model-client and data-layer imports passed. That is a version and import check of an
-existing environment, not proof of a fresh installation or of API connectivity; the
-test suite and the saved notebook runs cover the rest.
+The pinned requirements match the project's virtual environment (21 distributions), and
+all LangChain/LangGraph, SQLite checkpoint/store, Chroma, model-client and data-layer
+imports load. The test suite and the saved notebook runs are the functional evidence.
 
 ### 5.9 Implementation style from the lessons
 
@@ -927,14 +925,12 @@ and model behaviour are inspected separately in notebook 03.
 
 ## 7. Decisions, preparation and submission checks
 
-The behaviour I settled on: specialist-owned tools, a narrow Intake, read-only
+The design in one paragraph: specialist-owned tools, a narrow Intake, read-only
 Operations, several issues per request with independent targeted retries,
 outcome-specific reviewed responses, and an immediate deterministic handoff fallback.
-A later decision put Supervisor before Classifier and required every specialist,
-including Escalation, to return to Supervisor. That replaced the earlier shortcuts
-(Intake straight to Classifier, Escalation straight to Response or Persist) and keeps
-Supervisor as the last decision-maker before the save. No fixed acknowledgement
-template replaces the Response stage.
+Supervisor comes before Classifier, and every specialist, including Escalation, returns
+to Supervisor, so Supervisor is the last decision-maker before the save. No fixed
+acknowledgement template replaces the Response stage.
 
 Three further reasons behind the design:
 
@@ -944,11 +940,9 @@ Three further reasons behind the design:
 - Once escalation is decided, another model call adds no verified facts. It would only
   polish wording, while what matters is preserving the case for a human.
 
-The build followed this order: state and workflow wiring, Intake/support helpers,
-deterministic Supervisor routes and Persist first, tested with fixed specialist outputs
-and a fixed draft-review result, then the model-backed specialists one at a time. The
-agent, tool and workflow bodies are implemented and the local suite passes with no
-skipped tests.
+Implementation order: state and workflow wiring, Intake and support helpers, the
+deterministic Supervisor routes and Persist (tested with fixed specialist outputs), then
+the model-backed specialists one at a time.
 
 The documented `trace_events` model is part of the support schema. Notebook 02 requires
 at least 14 articles before it creates ticket fixtures; the supplied four were extended
@@ -974,8 +968,8 @@ Selected exact rubric requirements and their design locations:
 | "Long-term memory is used to store resolved issues and customer preferences accross different sessions" | 5.7 and T8. |
 | "All logs are structured and searchable" | `trace_events`, 5.6 and T7. |
 
-The code and saved demonstrations exist; the local test suite and the saved notebook
-outputs are the evidence. The [shared state](../state.py),
+The local test suite and the saved notebook outputs are the evidence for the statements
+above. The [shared state](../state.py),
 [workflow](../workflow.py), [agentic README](../README.md) and the agent/tool
 interfaces match this document; the agent and tool bodies are implemented. The
 [chat and batch interfaces](../../utils.py)

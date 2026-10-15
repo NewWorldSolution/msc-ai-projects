@@ -21,7 +21,7 @@ persistence helpers, with a passing local test suite.
 maps the course notebooks to this package. LangGraph connects nodes through
 StateGraph, explicit edges and Supervisor's Command, with reducers and SQLite
 checkpoint/store persistence. Supervisor routes in code and calls a model only
-for draft review. LangChain supplies ChatPromptTemplate, structured model results,
+for draft review and for planning Operations lookups. LangChain supplies ChatPromptTemplate, structured model results,
 Operations tool binding and scored article retrieval inside the nodes.
 
 ticket_tools.py starts with load_ticket_context using notebook 02's supplied
