@@ -20,13 +20,13 @@ from data.models import udahub
 from utils import get_session
 from test_intake import seeded_resources, trusted_config
 from test_persist import resolved_state
-from test_review_regressions import ScoredStore, knowledge_config
+from test_tool_contracts import ScoredStore, knowledge_config
 from test_ticket_tools import engine, resolved_outcome
 
 
 @pytest.fixture
 def intake_resources():
-    """Dispose both isolated databases after each Intake regression."""
+    """Dispose both isolated databases after each Intake test."""
     support, business = seeded_resources()
     yield trusted_config(support, business)
     support.dispose()
@@ -248,7 +248,7 @@ def test_new_turn_resets_only_current_turn_allowances(intake_resources):
 
 
 def test_memory_summary_is_checkpoint_only_after_core_commit(engine):
-    """Document the supported audit boundary with real database assertions."""
+    """The memory summary lives only in the checkpoint; the support rows are committed first."""
     result = persist.persist_case(resolved_state(), {"configurable": {"thread_id": "ticket-1"}}, udahub_engine=engine, store=InMemoryStore())
     assert result["persistence_result"]["saved"] is True
     assert result["persistence_result"]["memory"]["status"] == "succeeded"

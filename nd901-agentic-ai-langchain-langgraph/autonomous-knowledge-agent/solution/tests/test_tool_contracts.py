@@ -1,4 +1,4 @@
-"""Regression checks for the tool corrections; only in-memory resources are used."""
+"""Contract checks for the read-only tools; only in-memory resources are used."""
 
 from contextlib import contextmanager
 from datetime import datetime

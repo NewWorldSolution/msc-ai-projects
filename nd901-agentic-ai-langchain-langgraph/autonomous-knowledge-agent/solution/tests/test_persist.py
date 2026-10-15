@@ -1,4 +1,4 @@
-"""Executable tests for the Persist node's release and retry contracts."""
+"""Tests for the Persist node's release and retry contracts."""
 
 from langchain_core.messages import HumanMessage
 from langgraph.graph.message import add_messages

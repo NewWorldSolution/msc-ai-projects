@@ -1,4 +1,4 @@
-"""Credential-free regressions for shared reservations and budget handoffs."""
+"""Shared model-call reservations and budget handoffs; no credentials needed."""
 
 from copy import deepcopy
 import json

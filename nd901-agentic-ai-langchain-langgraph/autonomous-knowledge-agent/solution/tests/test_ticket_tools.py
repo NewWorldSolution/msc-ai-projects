@@ -1,4 +1,4 @@
-"""Executable tests for atomic UDA-Hub ticket outcome persistence."""
+"""Tests for atomic UDA-Hub ticket outcome persistence."""
 
 import sqlite3
 from contextlib import contextmanager

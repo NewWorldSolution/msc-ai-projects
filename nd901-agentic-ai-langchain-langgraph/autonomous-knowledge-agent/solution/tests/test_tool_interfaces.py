@@ -1,4 +1,4 @@
-"""Model-facing schemas and actual SQL checks for the Operations tool set."""
+"""Model-facing schemas and SQL checks for the Operations tool set."""
 
 import pytest
 from sqlalchemy import event
@@ -7,7 +7,7 @@ from agentic.tools.customer_tools import lookup_customer_tool
 from agentic.tools.experience_tools import lookup_experiences
 from agentic.tools.reservation_tools import lookup_reservations
 from agentic.tools.subscription_tools import lookup_subscription
-from test_review_regressions import business_engine, config
+from test_tool_contracts import business_engine, config
 
 
 TOOLS = [lookup_customer_tool, lookup_subscription, lookup_reservations, lookup_experiences]

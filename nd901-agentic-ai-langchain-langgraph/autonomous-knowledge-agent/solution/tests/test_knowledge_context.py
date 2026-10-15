@@ -1,4 +1,4 @@
-"""Check scoped evidence in prompts produced by the real Knowledge function."""
+"""Check scoped evidence in the prompts the Knowledge function builds."""
 
 import json
 from copy import deepcopy

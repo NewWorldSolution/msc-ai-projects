@@ -1,4 +1,4 @@
-"""Regression checks for first dispatch and specialist continuation, without APIs."""
+"""First dispatch and specialist continuation, without APIs."""
 
 from copy import deepcopy
 from unittest.mock import Mock

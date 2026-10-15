@@ -266,7 +266,7 @@ def test_real_source_mismatch_is_failure_without_model(real_search,metadata,text
     assert delta['retrieved_articles']==[]
     assert not model.mock_calls
 
-# Regression probes: expected behavior from the existing retry/timeout contract.
+# Retry and timeout behaviour expected from the contract.
 def test_terminal_source_failure_cannot_become_supported_on_reassignment(env):
     env[0]['assignment'].update(issue_ids=['i1'],retrieval_mode='targeted')
     env[0]['issues'][0]['coverage_reason']='Missing exception'

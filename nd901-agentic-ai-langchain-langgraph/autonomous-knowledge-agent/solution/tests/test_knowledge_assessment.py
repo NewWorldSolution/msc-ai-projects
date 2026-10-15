@@ -1,4 +1,4 @@
-"""Assessment and retry tests using the real Knowledge function and returned delta."""
+"""Assessment and retry tests using the Knowledge function and its returned delta."""
 from copy import deepcopy
 from unittest.mock import Mock
 from threading import Event

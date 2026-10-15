@@ -11,7 +11,7 @@ from sqlalchemy import event
 
 from agentic.agents import operations, supervisor
 from agentic.tools import subscription_tools
-from test_review_regressions import business_engine
+from test_tool_contracts import business_engine
 
 
 class ScriptedOperationsModel:

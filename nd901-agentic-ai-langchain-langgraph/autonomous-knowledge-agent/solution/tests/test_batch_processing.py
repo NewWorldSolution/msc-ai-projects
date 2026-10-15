@@ -1,4 +1,4 @@
-"""Checks for the proposed runner using temporary databases and no providers."""
+"""Batch runner checks with temporary databases and no providers."""
 from datetime import datetime, timedelta
 from unittest.mock import Mock
 from types import SimpleNamespace
@@ -339,7 +339,7 @@ def test_real_graph_follow_up_keeps_history_and_persists_approved_email(monkeypa
 
 
 def test_notebook_seed_uses_timestamps_before_uuid_tiebreakers():
-    """Execute the actual proposed seed cell with UUIDs ordered against scenario order."""
+    """Execute the notebook's seed cell with UUIDs ordered against scenario order."""
     import json
     from pathlib import Path
     core, business = seeded_resources()

@@ -1,4 +1,4 @@
-"""Actual Classifier node routing and shared reservations without providers."""
+"""Classifier node routing and shared reservations without providers."""
 from copy import deepcopy
 from unittest.mock import Mock
 import pytest

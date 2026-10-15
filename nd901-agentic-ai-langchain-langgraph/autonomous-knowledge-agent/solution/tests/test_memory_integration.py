@@ -1,4 +1,4 @@
-"""Memory integration regressions with scripted reviews and real SQLite writes."""
+"""Memory integration with scripted reviews and real SQLite writes."""
 
 from copy import deepcopy
 import json

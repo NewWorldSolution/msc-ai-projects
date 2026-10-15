@@ -1,4 +1,4 @@
-"""Response drafting regressions: fake models only, no provider or database writes."""
+"""Response drafting tests: fake models only, no provider or database writes."""
 
 from copy import deepcopy
 import json
