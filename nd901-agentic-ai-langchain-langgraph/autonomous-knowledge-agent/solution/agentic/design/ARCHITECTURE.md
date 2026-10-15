@@ -468,7 +468,7 @@ sentence that acknowledges the earlier help or a stated preference, and to decla
 sentence in `history_acknowledgement`, a required field; for a returning customer the
 instruction is also given as its own message next to the recalled memory, because a rule
 inside the long system prompt alone is not followed reliably. The application accepts the
-declared sentence when it stands in the opening paragraph of the body and signals earlier
+declared sentence when it opens the body and signals earlier
 contact: either the phrase "welcome back", or a history marker ("before", "you asked",
 "last time" and similar) together with a word the memory names. Otherwise it accepts the
 body's opening sentence when that one qualifies; otherwise it opens the body with a fixed

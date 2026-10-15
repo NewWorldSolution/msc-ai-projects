@@ -350,8 +350,8 @@ def _personalize(draft, body, case, issue_ids):
     memory_words = _content_words(" ".join(str(item.get("content") or "") for item in memory))
     first_line = next((line for line in body.split("\n") if line.strip()), "")
     first_sentence = next((part for part in re.split(r"(?<=[.!?])\s+", first_line) if part.strip()), "")
-    # The declared sentence counts only where the customer reads first: the opening paragraph.
-    if offered and normalize_text(offered) in normalize_text(first_line) and _acknowledges_history(offered, memory_words):
+    # The declared sentence counts only where the customer reads first: it has to open the body.
+    if offered and normalize_text(body).startswith(normalize_text(offered)) and _acknowledges_history(offered, memory_words):
         acknowledgement, source = offered, "model"
     elif _acknowledges_history(first_sentence, memory_words):
         acknowledgement, source = first_sentence.strip(), "body"
