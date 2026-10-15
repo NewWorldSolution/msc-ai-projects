@@ -31,3 +31,30 @@ of this repository. Details are in `solution/README.md`.
 
 From the `solution` folder: `python -m pytest -q tests`. The suite uses fake models and
 makes no live calls.
+
+## Why this project is bigger than the brief, and how I built it
+
+The rubric asks for four agents, two tools, retrieval with a confidence gate, memory and
+logging. This project has all of that, and more: every customer reply is drafted, checked
+against its evidence and reviewed before it is released; rules the model ignored in
+testing are enforced in code; an escalated customer still receives a short receipt; every
+routing decision is logged and printed as the route the case took; and a test suite of
+about 600 tests runs without any live model call.
+
+I built it this way on purpose. My background is process optimisation, and I plan to
+apply this kind of support automation in my own work. So I treated the project as a
+prototype I would have to defend in front of colleagues and auditors: what happens when
+the model is wrong, what the customer sees when the system gives up, and how a human can
+trace any decision afterwards. Those questions shaped the design more than the rubric did.
+
+I designed the system myself: the Supervisor pattern with five specialists, the read-only
+business tools, the one-repair rule, the receipt rules for escalations, the memory scope,
+and the decision to keep memory across runs. Those choices, and the trade-offs behind
+them, are mine.
+
+I used AI assistants (Claude Code and Codex) the way I would use a pair programmer and a
+proofreader. They helped me translate my design into Python, correct code, write and
+repair tests, write docstrings and comments, and tidy the wording of this README and the
+design document. They also reviewed the finished project against the rubric so I could
+fix what they found. I ran every demonstration myself, read every reply the system
+produced, and decided what to change after each run.
